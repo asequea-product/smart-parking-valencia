@@ -1,165 +1,146 @@
-# Smart Parking Valencia
+# ParkingAI Valencia
+### Parking Decision Assistant · PM Portfolio · AI-First Product
 
-Prototype that helps drivers decide where they are more likely to find parking in Valencia using open urban data and simple prediction signals.
+A decision-support tool that helps drivers in Valencia find the most likely place to park — combining real open data from the city, time-based probability models, and AI reasoning via Claude.
 
-This project was built as a Product Manager portfolio experiment exploring the limitations of public parking data and how decision-support tools can improve the parking experience even without real-time sensors.
+**Live demo →** `https://graceful-sorbet-a7e743.netlify.app`
 
-Problem
+---
 
-Drivers in Valencia often spend several minutes searching for parking.
+## The problem
 
-The ideal solution would be real-time detection of free street spaces. However, this data is not publicly available.
+Drivers in Valencia spend 15–20 minutes on average searching for parking in dense urban areas. This generates unnecessary CO₂, congestion, and frustration.
 
-The city operates 4,000+ street sensors through the VLCi platform, but the data is restricted to municipal systems and not exposed through public APIs.
+The ideal solution would be real-time detection of free street spaces. That data exists — Valencia operates 4,000+ street sensors through the VLCi platform — but it is restricted to municipal systems and not exposed via public APIs.
 
-This creates a real product challenge:
+This creates a real product challenge: **the data exists, but access is fragmented or restricted.**
 
-The data exists, but access is fragmented or restricted.
+---
 
-Product Approach
+## Product approach
 
-Instead of detecting individual free spaces, this prototype helps drivers make better parking decisions using probabilistic signals.
+Instead of promising "free space detected", this tool answers a more honest and useful question:
 
-The app estimates the likelihood of finding parking in a specific area based on:
+> **Where do I have the best chance of finding parking near my destination?**
 
-zone type
+This shifts the product from detection to **decision optimisation** — a more realistic and defensible value proposition when full sensor data is unavailable.
 
-time of day
+The app estimates parking probability based on:
+- Zone type (ORA blue / orange, municipal underground)
+- Time of day and day of week
+- Real capacity data from municipal parkings
+- Claude AI reasoning over all available signals
 
-day of week
+---
 
-parking alternatives nearby
+## What's real vs estimated
 
-This mirrors how real mobility products work when full sensor data is unavailable.
+| Data | Source | Status |
+|------|--------|--------|
+| 22 municipal parkings (location, capacity) | Ayuntamiento de Valencia Open Data | ✅ Real, live API |
+| ORA zone locations, tariffs, schedules | Ayuntamiento de Valencia Open Data | ✅ Real |
+| Parking availability | Estimated by hour + day pattern | ⚠️ Estimated |
+| Street space availability | VLCi sensors (restricted access) | ❌ Not available publicly |
 
-Data Sources
-Public street data
+This is intentional and documented in the product. A good PM builds with available data and defines the roadmap toward better data.
 
-Available without permissions:
+---
 
-Valencia ORA zones (blue / orange street parking)
+## Architecture
 
-zone locations
+```
+User input (destination)
+        ↓
+Zone detection (Valencia neighborhoods)
+        ↓
+Netlify Function (proxy) → Valencia Open Data API
+        ↓
+Probability model (hour + day + zone type)
+        ↓
+Claude API (AI reasoning + recommendation)
+        ↓
+Ranked options with probability, cost, time
+```
 
-tariffs
+**No backend server. No database. Cost: €0/month.**
 
-parking schedules
+---
 
-historical parking behaviour patterns
+## Tech stack
 
-current device time
+| Layer | Technology |
+|-------|-----------|
+| Frontend | HTML, CSS, vanilla JavaScript |
+| AI reasoning | Claude API (claude-sonnet) |
+| Proxy / serverless | Netlify Functions |
+| Map | Leaflet.js + OpenStreetMap |
+| Data | Valencia Open Data (opendatasoft) |
+| Deployment | Netlify (auto-deploy from GitHub) |
 
-day of the week
+---
 
-These signals are used to estimate parking probability.
+## Data sources
 
-Municipal underground parkings
+**Municipal parkings** — 22 underground parkings with real coordinates and capacity
+`valencia.opendatasoft.com/explore/dataset/parkings/`
 
-The prototype integrates:
+**ORA zones** — Blue (1–2h, 2€/h) and orange (30min, 1.5€/h) street parking zones
+`valencia.opendatasoft.com/explore/dataset/aparcaments-ora-aparcamientos-ora/`
 
-22 municipal underground parkings in Valencia
+Both datasets are public, Creative Commons licensed, no authentication required.
 
-Available information:
+---
 
-location
+## Coverage
 
-total capacity
+Currently covers Valencia city only:
+- Russafa / Ruzafa
+- Ciutat Vella (Mercado Central, Cathedral, IVAM)
+- Eixample
+- Cabanyal
+- Malvarrosa / Ciudad de las Artes
+- Centro (Colón, Ayuntamiento, Glorieta)
 
-type
+Destinations outside Valencia city return a clear out-of-coverage message.
 
-estimated availability patterns
+---
 
-These provide a fallback when street parking probability is low.
+## Roadmap
 
-Optional integrations
+**V2 — Better availability data**
+- Request access to VLCi API (Valencia smart city platform) — 4,088 street sensors
+- Integrate Valenbisi (public bike API, updates every 10min) as a demand proxy signal
 
-Future versions could integrate parking providers such as:
+**V3 — Private parking coverage**
+- Parclick API integration (50–100 additional private garages in Valencia)
+- ElParking API as secondary source
+- Real-time availability for private operators
 
-Parclick
+**V4 — Crowdsourcing loop**
+- "I parked here" / "I'm leaving a spot" feedback buttons (already in UI)
+- Weighted signal decay over time
+- Local Guide Points incentive model
 
-ElParking
+---
 
-Both provide developer APIs with registration.
+## Product insight
 
-These would allow real-time availability of private parking garages.
+The biggest constraint in urban mobility products is not the algorithm — it's access to city infrastructure data.
 
-Key Features
+Valencia has the sensors. The data exists. But the lack of open APIs forces products to rely on probabilistic models and behavioural patterns instead of ground truth.
 
-Interactive map of Valencia showing:
+This prototype was built to explore that constraint honestly: what can you build that is genuinely useful when you can't access the data you need?
 
-ORA blue zones
+The answer: a decision-support tool that is transparent about its limitations and still better than deciding blind.
 
-ORA orange zones
+---
 
-municipal parkings
+## About
 
-Search for:
+Built as a **Product Manager portfolio experiment** exploring:
+- AI-first product design (Claude API as reasoning layer)
+- Working with fragmented open urban data
+- Honest product scoping under data constraints
+- Serverless architecture with zero infrastructure cost
 
-street
-
-neighbourhood
-
-destination
-
-Probability estimation:
-
-Example
-
-Carrer de Russafa
-Estimated availability: ~35%
-Best time window: 14:00–16:00
-
-Decision support:
-
-The app suggests whether to:
-
-try street parking
-
-move to another nearby street
-
-go directly to a parking garage
-
-Crowdsourced feedback
-
-Users can improve predictions through simple signals:
-
-✓ I parked here
-↑ I left a free spot
-
-These signals simulate a Waze-like feedback loop for parking prediction.
-
-Product Insight
-
-The experiment reveals an important constraint in urban mobility products:
-
-The biggest limitation is not the algorithm, but access to city infrastructure data.
-
-While Valencia has thousands of parking sensors, the lack of open APIs prevents real-time street parking visibility.
-
-Products must therefore rely on probabilistic models and behavioural patterns.
-
-Tech Stack
-
-Frontend
-
-JavaScript
-
-HTML
-
-OpenStreetMap
-
-Backend
-
-Netlify serverless functions
-
-Data
-
-Valencia Open Data
-
-ORA zone datasets
-
-municipal parking datasets
-
-Deployment
-
-Netlify
+**Stack decision log:** Netlify Functions chosen over a dedicated backend to keep the project zero-cost and deployable in minutes. Claude API chosen over a rule-based recommendation engine because the reasoning quality is significantly better for ambiguous inputs ("near the stadium", "Mestalla area") and the cost per query is negligible for a prototype.

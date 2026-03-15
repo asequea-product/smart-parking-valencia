@@ -355,7 +355,11 @@ function renderResult(dest, zona, r) {
         <div class="stat"><div class="stat-label">Tiempo búsqueda</div><div class="stat-value">~${op.tiempo_min} min</div></div>
         <div class="stat"><div class="stat-label">Coste</div><div class="stat-value">${op.coste}</div></div>
       </div>
-      <div class="ai-note"><span class="ai-note-icon">✦ IA</span>${op.razonamiento}</div>
+     <div class="ai-note"><span class="ai-note-icon">✦ IA</span>${op.razonamiento}</div>
+      <a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(op.nombre + ' Valencia')}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:12px;font-weight:500;color:var(--blue);text-decoration:none;background:var(--blue2);padding:7px 12px;border-radius:8px">
+        🗺️ Cómo llegar en Google Maps →
+      </a>
+    </div>`;
     </div>`;
   }).join('');
 

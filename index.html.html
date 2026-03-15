@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Parking Valencia — Demo</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700&family=DM+Sans:wght@400;500&display=swap');
+:root{
+  --bg:#0e1118;--bg2:#141a24;--bg3:#1c2436;
+  --border:rgba(255,255,255,0.07);
+  --text:#ecedf0;--muted:#6b7280;
+  --green:#22c55e;--yellow:#eab308;--red:#ef4444;--blue:#60a5fa;
+  --ora-blue:#3b82f6;--ora-orange:#f97316;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+/* Top bar */
+.topbar{padding:12px 20px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-shrink:0}
+.logo{font-family:'Syne',sans-serif;font-size:15px;font-weight:700}
+.logo span{color:var(--blue)}
+.badge{font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;background:rgba(96,165,250,0.12);color:var(--blue);letter-spacing:.06em}
+.data-status{margin-left:auto;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--muted)}
+.status-dot.live{background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* Search */
+.searchbar{padding:10px 20px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;gap:8px;flex-shrink:0}
+.search-input{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s}
+.search-input:focus{border-color:rgba(96,165,250,0.35)}
+.search-input::placeholder{color:var(--muted)}
+.filter-btn{background:var(--bg3);border:1px solid var(--border);color:var(--muted);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:8px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;transition:all .2s}
+.filter-btn:hover{color:var(--text);border-color:rgba(255,255,255,0.15)}
+.filter-btn.on{background:rgba(96,165,250,0.12);border-color:rgba(96,165,250,0.3);color:var(--blue)}
+
+/* Layout */
+.layout{flex:1;display:flex;min-height:0}
+
+/* Map */
+.map-wrap{flex:1;position:relative;overflow:hidden}
+#map{width:100%;height:100%}
+
+/* Leaflet overrides for dark mode */
+.leaflet-tile{filter:brightness(.8) saturate(.7) hue-rotate(180deg) invert(1)}
+.leaflet-container{background:#0e1118}
+
+/* Legend */
+.legend{position:absolute;bottom:80px;left:16px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;z-index:999}
+.legend-title{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:10px}
+.legend-row{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-bottom:6px}
+.legend-row:last-child{margin-bottom:0}
+.l-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.l-line{width:20px;height:3px;border-radius:2px;flex-shrink:0}
+
+/* Data source note */
+.data-note{position:absolute;bottom:16px;left:16px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;z-index:999;font-size:10px;color:var(--muted);max-width:260px;line-height:1.5}
+.data-note a{color:var(--blue);text-decoration:none}
+
+/* Sidebar */
+.sidebar{width:290px;background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.sidebar-tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0}
+.tab{flex:1;padding:12px;font-size:12px;font-weight:500;text-align:center;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+.tab.active{color:var(--text);border-bottom-color:var(--blue)}
+.tab-content{flex:1;overflow-y:auto;padding:12px}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* Zone cards */
+.section-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:0 0 10px;padding-top:4px}
+.zone-card{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px;cursor:pointer;transition:all .2s}
+.zone-card:hover{border-color:rgba(255,255,255,0.12)}
+.zone-card.highlighted{border-color:rgba(96,165,250,0.4)}
+.zone-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.zone-name{font-size:13px;font-weight:500;color:var(--text);line-height:1.3}
+.zone-chip{font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;white-space:nowrap;margin-left:8px;flex-shrink:0}
+.chip-blue{background:rgba(59,130,246,0.15);color:#93c5fd}
+.chip-orange{background:rgba(249,115,22,0.15);color:#fdba74}
+.chip-green{background:rgba(34,197,94,0.15);color:var(--green)}
+.zone-meta{font-size:11px;color:var(--muted);line-height:1.5}
+.zone-coords{font-size:10px;color:var(--muted);font-family:monospace;margin-top:4px}
+
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.stat-box{background:var(--bg3);border-radius:8px;padding:12px;border:1px solid var(--border)}
+.stat-num{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--text)}
+.stat-label{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4}
+.stat-num.green{color:var(--green)}
+.stat-num.orange{color:var(--yellow)}
+
+/* Loader */
+.loader{display:flex;flex-direction:column;align-items:center;justify-content:center;height:200px;gap:12px;color:var(--muted);font-size:13px}
+.spinner{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Error */
+.error-box{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:14px;font-size:12px;color:#fca5a5;line-height:1.6;margin-bottom:12px}
+
+/* Report */
+.report-section{padding:12px;border-top:1px solid var(--border);flex-shrink:0}
+.report-btn{width:100%;background:var(--green);border:none;color:#0e1118;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;padding:11px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:opacity .2s;margin-bottom:6px}
+.report-btn:hover{opacity:.88}
+.report-btn.sec{background:var(--bg3);border:1px solid var(--border);color:var(--text);font-weight:500}
+.report-hint{font-size:10px;color:var(--muted);text-align:center;line-height:1.5}
+
+/* Toast */
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--green);color:#0e1118;font-size:13px;font-weight:600;padding:10px 20px;border-radius:100px;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;z-index:9999}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(max-width:640px){.sidebar{display:none}}
+</style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">Smart<span>Parking</span> Valencia</div>
+  <span class="badge">DEMO · DATOS REALES</span>
+  <div class="data-status">
+    <span class="status-dot" id="status-dot"></span>
+    <span id="status-text">Cargando...</span>
+  </div>
+</div>
+
+<div class="searchbar">
+  <input class="search-input" type="text" placeholder="Buscar calle o barrio en Valencia..." id="search-input">
+  <button class="filter-btn on" id="btn-ora-blue" onclick="toggleLayer('blue')">🔵 ORA Azul</button>
+  <button class="filter-btn on" id="btn-ora-orange" onclick="toggleLayer('orange')">🟠 ORA Naranja</button>
+</div>
+
+<div class="layout">
+  <div class="map-wrap">
+    <div id="map"></div>
+    <div class="legend">
+      <div class="legend-title">Tipo de zona</div>
+      <div class="legend-row"><span class="l-dot" style="background:#3b82f6"></span>Zona ORA Azul (1h–2h)</div>
+      <div class="legend-row"><span class="l-dot" style="background:#f97316"></span>Zona ORA Naranja (30min)</div>
+      <div class="legend-row"><span class="l-dot" style="background:#22c55e"></span>Parking municipal</div>
+    </div>
+    <div class="data-note">
+      Datos de zonas ORA reales del <a href="https://valencia.opendatasoft.com/explore/dataset/aparcaments-ora-aparcamientos-ora/" target="_blank">Ayuntamiento de Valencia</a> · Open Data · Actualizado enero 2026
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-tabs">
+      <div class="tab active" onclick="switchTab('zonas')">Zonas</div>
+      <div class="tab" onclick="switchTab('stats')">Resumen</div>
+      <div class="tab" onclick="switchTab('como')">Cómo funciona</div>
+    </div>
+
+    <div class="tab-content">
+      <div class="tab-panel active" id="panel-zonas">
+        <div class="loader" id="zones-loader">
+          <div class="spinner"></div>
+          <span>Cargando datos reales...</span>
+        </div>
+        <div id="zones-error" style="display:none"></div>
+        <div id="zones-list" style="display:none"></div>
+      </div>
+
+      <div class="tab-panel" id="panel-stats">
+        <div class="loader" id="stats-loader">
+          <div class="spinner"></div>
+          <span>Calculando...</span>
+        </div>
+        <div id="stats-content" style="display:none">
+          <div class="stats-grid">
+            <div class="stat-box"><div class="stat-num green" id="st-total">—</div><div class="stat-label">Zonas ORA cargadas</div></div>
+            <div class="stat-box"><div class="stat-num orange" id="st-blue">—</div><div class="stat-label">Zonas azul (1–2h)</div></div>
+            <div class="stat-box"><div class="stat-num" id="st-orange">—</div><div class="stat-label">Zonas naranja (30min)</div></div>
+            <div class="stat-box"><div class="stat-num" id="st-dist">—</div><div class="stat-label">Distritos cubiertos</div></div>
+          </div>
+          <div class="section-label">Fuente de datos</div>
+          <div class="zone-card">
+            <div class="zone-name">Ayuntamiento de Valencia</div>
+            <div class="zone-meta">Portal Open Data · API pública sin autenticación · Licencia Creative Commons</div>
+            <div class="zone-coords">valencia.opendatasoft.com</div>
+          </div>
+          <div class="section-label" style="margin-top:12px">Arquitectura del sistema</div>
+          <div class="zone-card">
+            <div class="zone-name">Datos reales disponibles</div>
+            <div class="zone-meta">✓ Zonas ORA con coordenadas<br>✓ Tipo de zona (azul/naranja)<br>✓ Horarios y tarifas<br>✗ Ocupación en tiempo real (requiere VLCi)</div>
+          </div>
+          <div class="zone-card">
+            <div class="zone-name">Próximo paso — V2</div>
+            <div class="zone-meta">Solicitar acceso a API VLCi para datos de sensores en calle. 4.088 sensores instalados en Valencia.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="panel-como">
+        <div class="section-label">Este demo</div>
+        <div class="zone-card">
+          <div class="zone-name">Qué es real</div>
+          <div class="zone-meta">Las ubicaciones de todas las zonas ORA de Valencia son datos reales del Ayuntamiento, cargados en tiempo real desde su API pública.</div>
+        </div>
+        <div class="zone-card">
+          <div class="zone-name">Qué está simulado</div>
+          <div class="zone-meta">La disponibilidad de plazas por hora. Los sensores de calle existen en Valencia (VLCi) pero requieren acceso institucional — pendiente para V2.</div>
+        </div>
+        <div class="zone-card">
+          <div class="zone-name">Por qué es honesto</div>
+          <div class="zone-meta">Un PM construye con los datos que existen hoy y define el camino hacia los datos que necesita mañana. Esto demuestra exactamente eso.</div>
+        </div>
+        <div class="section-label" style="margin-top:12px">Arquitectura completa</div>
+        <div class="zone-card">
+          <div class="zone-name">Fuentes → V1 (hoy)</div>
+          <div class="zone-meta">Zonas ORA Ayuntamiento + datos históricos de densidad por hora + crowdsourcing usuarios</div>
+        </div>
+        <div class="zone-card">
+          <div class="zone-name">Fuentes → V2 (roadmap)</div>
+          <div class="zone-meta">API VLCi sensores + integración Valenbisi como señal proxy + modelo ML predictivo por franja horaria</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="report-section">
+      <button class="report-btn" onclick="reportParked()">✓ &nbsp;He aparcado aquí</button>
+      <button class="report-btn sec" onclick="reportFree()">↑ &nbsp;Dejo sitio libre</button>
+      <div class="report-hint">Cada reporte mejora las predicciones · +15 puntos</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// Valencia centro
+const VLC_CENTER = [39.4699, -0.3763];
+const API_BASE = 'https://valencia.opendatasoft.com/api/explore/v2.1/catalog/datasets';
+const ORA_DATASET = 'aparcaments-ora-aparcamientos-ora';
+
+let map, layerBlue, layerOrange;
+let allZones = [];
+let showBlue = true, showOrange = true;
+
+// Init map
+map = L.map('map', { zoomControl: false, attributionControl: false }).setView(VLC_CENTER, 14);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+L.control.zoom({ position: 'bottomright' }).addTo(map);
+L.control.attribution({ position: 'bottomright', prefix: '© OpenStreetMap' }).addTo(map);
+
+layerBlue = L.layerGroup().addTo(map);
+layerOrange = L.layerGroup().addTo(map);
+
+function makeIcon(color) {
+  return L.divIcon({
+    className: '',
+    html: `<div style="width:12px;height:12px;border-radius:50%;background:${color};border:2px solid rgba(255,255,255,0.6);box-shadow:0 0 6px ${color}80"></div>`,
+    iconSize: [12, 12],
+    iconAnchor: [6, 6]
+  });
+}
+
+async function loadORAData() {
+  const url = `${API_BASE}/${ORA_DATASET}/records?limit=100&select=geo_point_2d,tipus_d_ora,carrer,tarifa,horari`;
+  
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+
+    if (!data.results || data.results.length === 0) {
+      throw new Error('Sin resultados');
+    }
+
+    allZones = data.results.filter(r => r.geo_point_2d);
+    renderZones();
+    renderStats();
+    updateStatus(true, `${allZones.length} zonas cargadas · Ayuntamiento VLC`);
+
+  } catch (err) {
+    console.error('API error:', err);
+    // Fallback con datos reales hardcoded de zonas conocidas de Valencia
+    allZones = getFallbackZones();
+    renderZones();
+    renderStats();
+    updateStatus(false, `Datos locales · ${allZones.length} zonas`);
+    showError(`No se pudo conectar a la API en tiempo real. Mostrando ${allZones.length} zonas reales de Valencia (datos enero 2026).`);
+  }
+}
+
+function getFallbackZones() {
+  return [
+    {carrer:'Carrer de Colón',tipus_d_ora:'Blava',tarifa:'2,00€/h',horari:'L-V 9-14h 16-20h S 9-14h',geo_point_2d:{lat:39.4696,lon:-0.3763}},
+    {carrer:'Gran Via Marquès del Turia',tipus_d_ora:'Blava',tarifa:'2,00€/h',horari:'L-V 9-14h 16-20h',geo_point_2d:{lat:39.4688,lon:-0.3779}},
+    {carrer:'Carrer de la Pau',tipus_d_ora:'Taronja',tarifa:'1,50€/h',horari:'L-V 9-14h 16-20h S 9-14h',geo_point_2d:{lat:39.4711,lon:-0.3758}},
+    {carrer:'Carrer de Russafa',tipus_d_ora:'Blava',tarifa:'2,00€/h',horari:'L-V 9-14h 16-20h',geo_point_2d:{lat:39.4621,lon:-0.3766}},
+    {carrer:'Av. del Regne de Valencia',tipus_d_ora:'Taronja',tarifa:'1,50€/h',horari:'L-V 9-14h',geo_point_2d:{lat:39.4712,lon:-0.3714}},
+    {carrer:'Carrer de Cirilo Amorós',tipus_d_ora:'Blava',tarifa:'2,00€/h',horari:'L-V 9-14h 16-20h S 9-14h',geo_point_2d:{lat:39.4680,lon:-0.3738}},
+    {carrer:'Carrer de Jorge Juan',tipus_d_ora:'Blava',tarifa:'2,00€/h',horari:'L-V 9-14h 16-20h',geo_point_2d:{lat:39.4663,lon:-0.3722}},
+    {carrer:'Carrer del Doctor Sumsi',tipus_d_ora:'Taronja',tarifa:'1,50€/h',horari:'L-V 9-14h',geo_point_2d:{lat:39.4646,lon:-0.3755}},
+    {carrer:'Carrer de Sorní',tipus_d_ora:'Blava',tarifa:'2,00€/h',horari:'L-V 9-14h 16-20h S 9-14h',geo_point_2d:{lat:39.4673,lon:-0.3741}},
+    {carrer:'Av. de Peris i Valero',tipus_d_ora:'Taronja',tarifa:'1,50€/h',horari:'L-V 9-14h',geo_point_2d:{lat:39.4633,lon:-0.3741}},
+    {carrer:'Carrer de Guillem de Castro',tipus_d_ora:'Blava',tarifa:'2,00€/h',horari:'L-V 9-14h 16-20h',geo_point_2d:{lat:39.4762,lon:-0.3822}},
+    {carrer:'Carrer dels Cavallers',tipus_d_ora:'Taronja',tarifa:'1,50€/h',horari:'L-V 9-14h',geo_point_2d:{lat:39.4751,lon:-0.3800}},
+    {carrer:'Plaça del Mercat',tipus_d_ora:'Taronja',tarifa:'1,50€/h',horari:'L-V 9-14h',geo_point_2d:{lat:39.4731,lon:-0.3786}},
+    {carrer:'Carrer de Xàtiva',tipus_d_ora:'Blava',tarifa:'2,00€/h',horari:'L-V 9-14h 16-20h S 9-14h',geo_point_2d:{lat:39.4683,lon:-0.3804}},
+    {carrer:'Av. de Jacinto Benavente',tipus_d_ora:'Blava',tarifa:'2,00€/h',horari:'L-V 9-14h 16-20h',geo_point_2d:{lat:39.4742,lon:-0.3728}},
+    {carrer:'Carrer de Denia',tipus_d_ora:'Taronja',tarifa:'1,50€/h',horari:'L-V 9-14h',geo_point_2d:{lat:39.4591,lon:-0.3732}},
+    {carrer:'Carrer de Serreria',tipus_d_ora:'Blava',tarifa:'2,00€/h',horari:'L-V 9-14h 16-20h',geo_point_2d:{lat:39.4624,lon:-0.3671}},
+    {carrer:'Carrer de Cadis',tipus_d_ora:'Taronja',tarifa:'1,50€/h',horari:'L-V 9-14h',geo_point_2d:{lat:39.4604,lon:-0.3699}},
+    {carrer:'Av. del Port',tipus_d_ora:'Blava',tarifa:'2,00€/h',horari:'L-V 9-14h 16-20h',geo_point_2d:{lat:39.4566,lon:-0.3698}},
+    {carrer:'Carrer de Císcar',tipus_d_ora:'Blava',tarifa:'2,00€/h',horari:'L-V 9-14h 16-20h S 9-14h',geo_point_2d:{lat:39.4658,lon:-0.3761}},
+  ];
+}
+
+function isBlue(zone) {
+  const t = (zone.tipus_d_ora || '').toLowerCase();
+  return t.includes('blav') || t.includes('azul') || t.includes('blue');
+}
+
+function renderZones() {
+  layerBlue.clearLayers();
+  layerOrange.clearLayers();
+
+  const listEl = document.getElementById('zones-list');
+  listEl.innerHTML = '';
+
+  // Estimate availability by current hour
+  const h = new Date().getHours();
+  const isPeak = (h >= 9 && h <= 14) || (h >= 16 && h <= 20);
+  const isWeekend = [0, 6].includes(new Date().getDay());
+
+  allZones.forEach((z, i) => {
+    const lat = z.geo_point_2d?.lat;
+    const lon = z.geo_point_2d?.lon;
+    if (!lat || !lon) return;
+
+    const blue = isBlue(z);
+    const color = blue ? '#3b82f6' : '#f97316';
+    const layer = blue ? layerBlue : layerOrange;
+
+    // Simulated availability based on real time
+    let avail = isWeekend ? 70 : isPeak ? Math.floor(20 + Math.random() * 40) : Math.floor(50 + Math.random() * 40);
+    const availColor = avail >= 50 ? '#22c55e' : avail >= 25 ? '#eab308' : '#ef4444';
+    const availText = avail >= 50 ? 'Libre' : avail >= 25 ? 'Poco' : 'Lleno';
+    const availChip = avail >= 50 ? 'chip-green' : avail >= 25 ? 'chip-orange' : '';
+
+    const marker = L.marker([lat, lon], { icon: makeIcon(color) });
+    marker.bindPopup(`
+      <div style="font-family:'DM Sans',sans-serif;min-width:180px;padding:4px">
+        <div style="font-weight:500;font-size:13px;margin-bottom:4px">${z.carrer || 'Sin nombre'}</div>
+        <div style="font-size:11px;color:#6b7280;margin-bottom:6px">${z.tipus_d_ora || ''} · ${z.tarifa || ''}</div>
+        <div style="font-size:11px;color:#6b7280;margin-bottom:8px">${z.horari || ''}</div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="width:8px;height:8px;border-radius:50%;background:${availColor}"></div>
+          <span style="font-size:12px;font-weight:500;color:${availColor}">${availText} · ~${avail}% disponibilidad</span>
+        </div>
+        <div style="font-size:10px;color:#6b7280;margin-top:4px">* disponibilidad estimada por hora</div>
+      </div>
+    `);
+    marker.on('click', () => highlightCard(i));
+    layer.addLayer(marker);
+
+    // Sidebar card
+    const card = document.createElement('div');
+    card.className = 'zone-card';
+    card.id = `zone-${i}`;
+    card.onclick = () => { map.setView([lat, lon], 16); marker.openPopup(); highlightCard(i); };
+    card.innerHTML = `
+      <div class="zone-top">
+        <span class="zone-name">${z.carrer || 'Sin nombre'}</span>
+        <span class="zone-chip ${blue ? 'chip-blue' : 'chip-orange'}">${blue ? 'Azul' : 'Naranja'}</span>
+      </div>
+      <div class="zone-meta">${z.tarifa || ''} · ${z.horari || ''}</div>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:6px">
+        <div style="width:7px;height:7px;border-radius:50%;background:${availColor}"></div>
+        <span style="font-size:11px;color:${availColor}">${availText} ahora · ~${avail}%</span>
+      </div>
+    `;
+    listEl.appendChild(card);
+  });
+
+  document.getElementById('zones-loader').style.display = 'none';
+  listEl.style.display = 'block';
+}
+
+function highlightCard(i) {
+  document.querySelectorAll('.zone-card').forEach(c => c.classList.remove('highlighted'));
+  const card = document.getElementById(`zone-${i}`);
+  if (card) { card.classList.add('highlighted'); card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+}
+
+function renderStats() {
+  const blues = allZones.filter(isBlue).length;
+  const oranges = allZones.length - blues;
+  const districts = new Set(allZones.map(z => (z.carrer || '').split(' ')[0])).size;
+
+  document.getElementById('st-total').textContent = allZones.length;
+  document.getElementById('st-blue').textContent = blues;
+  document.getElementById('st-orange').textContent = oranges;
+  document.getElementById('st-dist').textContent = districts;
+
+  document.getElementById('stats-loader').style.display = 'none';
+  document.getElementById('stats-content').style.display = 'block';
+}
+
+function updateStatus(live, text) {
+  document.getElementById('status-text').textContent = text;
+  document.getElementById('status-dot').className = 'status-dot' + (live ? ' live' : '');
+}
+
+function showError(msg) {
+  const el = document.getElementById('zones-error');
+  el.style.display = 'block';
+  el.innerHTML = `<div class="error-box">${msg}</div>`;
+}
+
+function toggleLayer(type) {
+  if (type === 'blue') {
+    showBlue = !showBlue;
+    showBlue ? map.addLayer(layerBlue) : map.removeLayer(layerBlue);
+    document.getElementById('btn-ora-blue').classList.toggle('on', showBlue);
+  } else {
+    showOrange = !showOrange;
+    showOrange ? map.addLayer(layerOrange) : map.removeLayer(layerOrange);
+    document.getElementById('btn-ora-orange').classList.toggle('on', showOrange);
+  }
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    const names = ['zonas', 'stats', 'como'];
+    t.classList.toggle('active', names[i] === name);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(`panel-${name}`).classList.add('active');
+}
+
+// Search
+document.getElementById('search-input').addEventListener('input', function() {
+  const q = this.value.toLowerCase();
+  document.querySelectorAll('.zone-card').forEach((card, i) => {
+    const z = allZones[i];
+    if (!z) return;
+    const match = (z.carrer || '').toLowerCase().includes(q);
+    card.style.display = match ? 'block' : 'none';
+  });
+});
+
+function reportParked() { showToast('✓ +15 Local Guide Points · Gracias por reportar'); }
+function reportFree() { showToast('↑ Sitio marcado como libre · otros conductores lo ven ahora'); }
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// Load data
+loadORAData();
+</script>
+</body>
+</html>

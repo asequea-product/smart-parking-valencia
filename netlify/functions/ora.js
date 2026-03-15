@@ -1,5 +1,5 @@
 exports.handler = async function(event, context) {
-  const url = 'https://valencia.opendatasoft.com/api/explore/v2.1/catalog/datasets/aparcaments-ora-aparcamientos-ora/records?limit=100';
+  const url = 'https://valencia.opendatasoft.com/api/explore/v2.1/catalog/datasets/expendedors-ora-expendedores-ora/records?limit=100';
   
   try {
     const response = await fetch(url);

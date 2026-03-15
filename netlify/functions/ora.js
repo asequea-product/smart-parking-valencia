@@ -1,5 +1,5 @@
 exports.handler = async function(event, context) {
-  const url = 'https://valencia.opendatasoft.com/api/explore/v2.1/catalog/datasets/aparcaments-ora-aparcamientos-ora/records?limit=100&select=geo_point_2d,tipus_d_ora,carrer,tarifa,horari';
+  const url = 'https://valencia.opendatasoft.com/api/explore/v2.1/catalog/datasets/aparcaments-ora-aparcamientos-ora/records?limit=100';
   
   try {
     const response = await fetch(url);

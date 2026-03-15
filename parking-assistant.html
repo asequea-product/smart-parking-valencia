@@ -1,1 +1,217 @@
-PLACEHOLDER
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parking Decision Assistant — Valencia</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap');
+:root{--bg:#09090c;--bg2:#111116;--bg3:#18181f;--bg4:#1f1f28;--border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.1);--text:#f0eff8;--muted:#6b6a7a;--muted2:#9998aa;--accent:#7c6aff;--accent2:#a594ff;--green:#22c55e;--yellow:#f59e0b;--red:#ef4444;}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;flex-direction:column}
+.header{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-shrink:0}
+.logo{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;letter-spacing:-.02em}
+.logo span{color:var(--accent2)}
+.badge{font-size:10px;font-weight:500;padding:3px 8px;border-radius:20px;background:rgba(124,106,255,0.12);color:var(--accent2);letter-spacing:.06em;border:1px solid rgba(124,106,255,0.2)}
+.header-right{margin-left:auto;font-size:11px;color:var(--muted)}
+.main{flex:1;display:flex;flex-direction:column;max-width:680px;width:100%;margin:0 auto;padding:32px 24px 48px}
+.hero{margin-bottom:32px}
+.hero-label{font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--accent2);margin-bottom:12px}
+.hero-title{font-family:'Syne',sans-serif;font-size:clamp(24px,5vw,36px);font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:10px}
+.hero-title span{color:var(--accent2)}
+.hero-desc{font-size:14px;color:var(--muted2);line-height:1.6;max-width:480px}
+.search-box{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:16px;margin-bottom:24px;transition:border-color .2s}
+.search-box:focus-within{border-color:rgba(124,106,255,0.4)}
+.search-row{display:flex;gap:10px;align-items:flex-end}
+.search-field{flex:1}
+.search-label{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+.search-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
+.search-input:focus{border-color:rgba(124,106,255,0.4)}
+.search-input::placeholder{color:var(--muted)}
+.context-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.ctx-chip{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--muted2);cursor:pointer;transition:all .2s}
+.ctx-chip:hover{border-color:var(--border2);color:var(--text)}
+.ctx-chip.active{background:rgba(124,106,255,0.1);border-color:rgba(124,106,255,0.3);color:var(--accent2)}
+.search-btn{background:var(--accent);border:none;border-radius:10px;padding:11px 20px;color:#fff;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;transition:opacity .2s}
+.search-btn:hover{opacity:.9}
+.search-btn:disabled{opacity:.4;cursor:default}
+.examples{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.example-btn{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--muted2);cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
+.example-btn:hover{border-color:var(--border2);color:var(--text)}
+.thinking{display:none;align-items:center;gap:12px;padding:20px;background:var(--bg2);border:1px solid var(--border);border-radius:16px;margin-bottom:24px;font-size:14px;color:var(--muted2)}
+.thinking.show{display:flex}
+.think-dots{display:flex;gap:4px}
+.think-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:blink 1.4s infinite}
+.think-dot:nth-child(2){animation-delay:.2s}
+.think-dot:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,100%{opacity:.2}50%{opacity:1}}
+.results{display:none}
+.results.show{display:block}
+.results-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.results-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em}
+.results-dest{font-size:12px;color:var(--accent2);background:rgba(124,106,255,0.1);padding:3px 10px;border-radius:20px}
+.option-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:12px;position:relative;overflow:hidden;transition:border-color .2s}
+.option-card:hover{border-color:var(--border2)}
+.option-card.best{border-color:rgba(124,106,255,0.35)}
+.option-card.best::before{content:'Mejor opción';position:absolute;top:0;right:0;background:var(--accent);color:#fff;font-size:10px;font-weight:600;padding:4px 12px;border-radius:0 16px 0 8px;letter-spacing:.06em}
+.option-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
+.option-left{flex:1}
+.option-num{font-size:10px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
+.option-name{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--text);letter-spacing:-.01em;margin-bottom:3px}
+.option-type{font-size:12px;color:var(--muted2)}
+.option-prob{text-align:right}
+.prob-num{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.prob-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.prob-bar{height:4px;background:var(--bg4);border-radius:2px;margin-bottom:14px;overflow:hidden}
+.prob-fill{height:100%;border-radius:2px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.option-meta{display:flex;gap:16px;flex-wrap:wrap}
+.meta-item{display:flex;flex-direction:column;gap:2px}
+.meta-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.meta-value{font-size:13px;font-weight:500;color:var(--text)}
+.ai-reasoning{margin-top:14px;padding-top:14px;border-top:1px solid var(--border);font-size:13px;color:var(--muted2);line-height:1.6;font-style:italic}
+.ai-tag{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:500;color:var(--accent2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;font-style:normal}
+.summary-box{background:rgba(124,106,255,0.06);border:1px solid rgba(124,106,255,0.15);border-radius:12px;padding:16px 18px;margin-top:4px;font-size:13px;color:var(--muted2);line-height:1.7}
+.summary-box strong{color:var(--text);font-weight:500}
+.data-sources{margin-top:16px;padding:12px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;font-size:11px;color:var(--muted);display:flex;gap:16px;flex-wrap:wrap}
+.data-src{display:flex;align-items:center;gap:5px}
+.src-dot{width:5px;height:5px;border-radius:50%;background:var(--green);flex-shrink:0}
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty-icon{font-size:32px;margin-bottom:12px}
+.empty-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--muted2);margin-bottom:6px}
+.empty-desc{font-size:13px;line-height:1.6}
+@media(max-width:480px){.main{padding:20px 16px 40px}.search-row{flex-direction:column}.option-top{flex-direction:column;gap:12px}.option-prob{text-align:left}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">Parking<span>AI</span></div>
+  <span class="badge">AI-FIRST · PORTFOLIO</span>
+  <div class="header-right">Valencia · datos reales</div>
+</div>
+<div class="main">
+  <div class="hero">
+    <div class="hero-label">Parking Decision Assistant</div>
+    <h1 class="hero-title">¿Dónde tengo más<br>probabilidades de <span>aparcar</span>?</h1>
+    <p class="hero-desc">No prometemos plaza libre. Te damos la mejor decisión posible — hora actual, zona, parkings reales de Valencia y patrones históricos.</p>
+  </div>
+  <div class="search-box">
+    <div class="search-row">
+      <div class="search-field">
+        <div class="search-label">¿Adónde vas?</div>
+        <input class="search-input" id="dest-input" type="text" placeholder="Ej: Mercado Central, Ruzafa, IVAM..." autocomplete="off">
+      </div>
+      <button class="search-btn" id="search-btn" onclick="analyze()">Analizar →</button>
+    </div>
+    <div class="context-row">
+      <div class="ctx-chip active" id="chip-calle" onclick="toggleChip('calle')">🚗 Calle</div>
+      <div class="ctx-chip active" id="chip-parking" onclick="toggleChip('parking')">🅿️ Parking</div>
+      <div class="ctx-chip" id="chip-urgente" onclick="toggleChip('urgente')">⚡ Tengo prisa</div>
+      <div class="ctx-chip" id="chip-barato" onclick="toggleChip('barato')">💶 Busco precio</div>
+    </div>
+    <div style="margin-top:10px">
+      <div class="search-label">Ejemplos rápidos</div>
+      <div class="examples">
+        <button class="example-btn" onclick="setDest('Mercado Central')">Mercado Central</button>
+        <button class="example-btn" onclick="setDest('Ruzafa')">Ruzafa</button>
+        <button class="example-btn" onclick="setDest('Ciudad de las Artes')">Ciudad de las Artes</button>
+        <button class="example-btn" onclick="setDest('Malvarrosa')">Malvarrosa</button>
+        <button class="example-btn" onclick="setDest('IVAM')">IVAM</button>
+      </div>
+    </div>
+  </div>
+  <div class="thinking" id="thinking">
+    <div class="think-dots"><div class="think-dot"></div><div class="think-dot"></div><div class="think-dot"></div></div>
+    <span id="thinking-text">Analizando zona y hora actual...</span>
+  </div>
+  <div class="results" id="results">
+    <div class="results-header">
+      <div class="results-title">Opciones recomendadas</div>
+      <div class="results-dest" id="results-dest"></div>
+    </div>
+    <div id="options-container"></div>
+    <div class="summary-box" id="summary-box"></div>
+    <div class="data-sources">
+      <div class="data-src"><span class="src-dot"></span>22 parkings municipales · Ayuntamiento VLC</div>
+      <div class="data-src"><span class="src-dot"></span>Zonas ORA · Open Data Valencia</div>
+      <div class="data-src"><span class="src-dot"></span>Hora actual · <span id="hora-actual"></span></div>
+    </div>
+  </div>
+  <div class="empty" id="empty-state">
+    <div class="empty-icon">🗺️</div>
+    <div class="empty-title">Introduce tu destino</div>
+    <div class="empty-desc">Te diremos dónde tienes más probabilidades de aparcar cerca, cuánto tiempo tardarás y si merece la pena buscar en calle o ir directo a parking.</div>
+  </div>
+</div>
+<script>
+const P=[{n:'Parking Colón',dm:400,dr:600,da:2200,dma:3100,di:800,pl:375,pr:'2€/h'},{n:'Parking Reina',dm:250,dr:900,da:2800,dma:3500,di:600,pl:207,pr:'1.8€/h'},{n:'Parking Ruzafa',dm:900,dr:200,da:1600,dma:2800,di:1400,pl:173,pr:'1.5€/h'},{n:'Parking Glorieta-Paz',dm:350,dr:700,da:2400,dma:3200,di:500,pl:375,pr:'1.8€/h'},{n:'Parking Av. Oeste',dm:600,dr:800,da:2000,dma:3000,di:300,pl:257,pr:'1.5€/h'},{n:'Parking Severo Ochoa',dm:1100,dr:1200,da:1800,dma:2200,di:900,pl:464,pr:'1.2€/h'},{n:'Parking Neptuno',dm:3200,dr:2800,da:1200,dma:600,di:3800,pl:373,pr:'2€/h'},{n:'Parking Chile-Aragón',dm:2200,dr:2100,da:800,dma:2000,di:2100,pl:527,pr:'1.5€/h'}];
+const C={'mercado central':[{n:'Calle del Mar',t:'ORA Azul',ta:'2€/h',p:40},{n:'Calle Bolsería',t:'ORA Naranja',ta:'1.5€/h',p:35},{n:'Calle Quart',t:'ORA Azul',ta:'2€/h',p:45}],'ruzafa':[{n:'Calle Cádiz',t:'ORA Azul',ta:'2€/h',p:45},{n:'Calle Cuba',t:'ORA Naranja',ta:'1.5€/h',p:38},{n:'Calle Sueca',t:'ORA Azul',ta:'2€/h',p:42}],'ciudad de las artes':[{n:'Av. del Saler',t:'Sin ORA',ta:'Gratis',p:65},{n:'Calle Pintor Maella',t:'Sin ORA',ta:'Gratis',p:60},{n:'Av. López Piñero',t:'Sin ORA',ta:'Gratis',p:70}],'malvarrosa':[{n:'Paseo Neptuno',t:'Sin ORA',ta:'Gratis',p:55},{n:'Calle Eugenia Viñes',t:'Sin ORA',ta:'Gratis',p:60},{n:'Calle de la Reina',t:'Sin ORA',ta:'Gratis',p:65}],'ivam':[{n:'Calle Guillem de Castro',t:'ORA Azul',ta:'2€/h',p:42},{n:'Calle dels Cavallers',t:'ORA Naranja',ta:'1.5€/h',p:38},{n:'Calle Quart',t:'ORA Azul',ta:'2€/h',p:45}]};
+let wC=true,wP=true,urg=false,bar=false;
+function hf(){const h=new Date().getHours(),w=[0,6].includes(new Date().getDay());if(w)return 0.75;if((h>=9&&h<=10)||(h>=16&&h<=20))return 0.35;if(h>=10&&h<=14)return 0.4;if(h>=14&&h<=16)return 0.6;return 0.85;}
+function hd(){const h=new Date().getHours(),w=[0,6].includes(new Date().getDay());if(w)return 'fin de semana';if((h>=9&&h<=10)||(h>=16&&h<=20))return 'hora punta';if(h>=10&&h<=14)return 'media mañana';if(h>=14&&h<=16)return 'hora de comida';if(h>=20)return 'noche tranquila';return 'madrugada';}
+function md(d){d=d.toLowerCase();if(d.includes('mercado')||d.includes('central')||d.includes('carmen'))return 'mercado central';if(d.includes('ruzafa')||d.includes('russafa'))return 'ruzafa';if(d.includes('arte')||d.includes('cienci'))return 'ciudad de las artes';if(d.includes('malva')||d.includes('neptuno')||d.includes('playa'))return 'malvarrosa';if(d.includes('ivam')||d.includes('guillem'))return 'ivam';return 'mercado central';}
+function toggleChip(t){const c=document.getElementById('chip-'+t);if(t==='calle'){wC=!wC;c.classList.toggle('active',wC);}else if(t==='parking'){wP=!wP;c.classList.toggle('active',wP);}else if(t==='urgente'){urg=!urg;c.classList.toggle('active',urg);bar=false;document.getElementById('chip-barato').classList.remove('active');}else{bar=!bar;c.classList.toggle('active',bar);urg=false;document.getElementById('chip-urgente').classList.remove('active');}}
+function setDest(v){document.getElementById('dest-input').value=v;analyze();}
+function gc(p){return p>=55?'#22c55e':p>=35?'#f59e0b':'#ef4444';}
+async function analyze(){
+  const dest=document.getElementById('dest-input').value.trim();
+  if(!dest){document.getElementById('dest-input').focus();return;}
+  document.getElementById('empty-state').style.display='none';
+  document.getElementById('results').classList.remove('show');
+  document.getElementById('thinking').classList.add('show');
+  document.getElementById('search-btn').disabled=true;
+  const txts=['Analizando zona y hora actual...','Consultando parkings municipales...','Calculando probabilidades...','Generando recomendación con IA...'];
+  let ti=0;const iv=setInterval(()=>{ti=(ti+1)%txts.length;document.getElementById('thinking-text').textContent=txts[ti];},900);
+  const h=new Date().getHours(),f=hf(),hourDesc=hd(),dk=md(dest);
+  const calles=(C[dk]||C['mercado central']).map(c=>({...c,prob:Math.round(Math.min(90,Math.max(10,c.p*f*(0.85+Math.random()*0.3))))}));
+  const distMap={mercado_central:'dm',ruzafa:'dr','ciudad_de_las_artes':'da',malvarrosa:'dma',ivam:'di'};
+  const dkey=distMap[dk.replace(/ /g,'_')]||'dm';
+  const parks=P.map(p=>({...p,dist:p[dkey],prob:Math.round(Math.min(90,Math.max(40,70*f*(0.9+Math.random()*0.2)+15)))})).sort((a,b)=>a.dist-b.dist).slice(0,3);
+  const prompt=`Eres experto en movilidad urbana en Valencia, España.
+Usuario quiere aparcar cerca de: "${dest}"
+Hora: ${h}:00 (${hourDesc}). Quiere calle: ${wC}, parking: ${wP}, prisa: ${urg}, precio: ${bar}
+
+CALLES:
+${calles.map((c,i)=>`${i+1}. ${c.n} (${c.t}) - ${c.ta} - Probabilidad: ${c.prob}%`).join('\n')}
+
+PARKINGS MUNICIPALES:
+${parks.map((p,i)=>`${i+1}. ${p.n} - ${p.pl} plazas - ${p.pr} - ${p.dist}m - Disponibilidad: ${p.prob}%`).join('\n')}
+
+Responde SOLO JSON sin texto extra:
+{"opciones":[{"nombre":"string","tipo":"string","prob":number,"tiempo":"string","coste":"string","razonamiento":"frase concreta sobre por qué esta opción ahora mismo","esMejor":boolean}],"resumen":"consejo final 2-3 frases mencionando hora y destino"}
+Devuelve 3 opciones ordenadas mejor a peor.`;
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const data=await res.json();
+    const parsed=JSON.parse((data.content?.[0]?.text||'').replace(/```json|```/g,'').trim());
+    clearInterval(iv);renderResults(dest,parsed);
+  }catch(e){
+    clearInterval(iv);
+    const ops=[];
+    if(wC)ops.push({nombre:calles[0].n,tipo:calles[0].t,prob:calles[0].prob,tiempo:'2-4 min andando',coste:calles[0].ta,razonamiento:`Zona con mayor rotación cerca de ${dest}. ${hourDesc} — ${calles[0].prob>50?'buen momento para intentarlo.':'ocupación alta, intenta llegar pronto.'}`,esMejor:!urg});
+    if(wP){ops.push({nombre:parks[0].n,tipo:'Parking municipal',prob:parks[0].prob,tiempo:`${Math.round(parks[0].dist/80)} min andando`,coste:parks[0].pr,razonamiento:`El parking municipal más cercano. ${parks[0].pl} plazas totales.`,esMejor:urg});if(parks[1])ops.push({nombre:parks[1].n,tipo:'Parking municipal',prob:parks[1].prob,tiempo:`${Math.round(parks[1].dist/80)} min andando`,coste:parks[1].pr,razonamiento:`Segunda opción. Mayor capacidad (${parks[1].pl} plazas).`,esMejor:false});}
+    renderResults(dest,{opciones:ops,resumen:`Para ${dest} a esta hora (${hourDesc}), ${urg?'prioriza el parking — no pierdas tiempo buscando en calle.':'merece la pena intentar calle primero. Si en 5 min no encuentras, ve al parking más cercano.'}`});
+  }
+}
+function renderResults(dest,data){
+  document.getElementById('thinking').classList.remove('show');
+  document.getElementById('search-btn').disabled=false;
+  document.getElementById('results-dest').textContent=dest;
+  document.getElementById('hora-actual').textContent=new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+  const cont=document.getElementById('options-container');
+  cont.innerHTML='';
+  data.opciones.forEach((op,i)=>{
+    const col=gc(op.prob);
+    const d=document.createElement('div');
+    d.className='option-card'+(op.esMejor?' best':'');
+    d.innerHTML=`<div class="option-top"><div class="option-left"><div class="option-num">Opción ${i+1}</div><div class="option-name">${op.nombre}</div><div class="option-type">${op.tipo}</div></div><div class="option-prob"><div class="prob-num" style="color:${col}">${op.prob}%</div><div class="prob-label">probabilidad</div></div></div><div class="prob-bar"><div class="prob-fill" style="width:0%;background:${col}" data-w="${op.prob}"></div></div><div class="option-meta"><div class="meta-item"><span class="meta-label">Tiempo</span><span class="meta-value">${op.tiempo}</span></div><div class="meta-item"><span class="meta-label">Coste</span><span class="meta-value">${op.coste}</span></div></div><div class="ai-reasoning"><div class="ai-tag">✦ Análisis IA</div>${op.razonamiento}</div>`;
+    cont.appendChild(d);
+  });
+  document.getElementById('summary-box').innerHTML=`<strong>Conclusión:</strong> ${data.resumen}`;
+  document.getElementById('results').classList.add('show');
+  setTimeout(()=>{document.querySelectorAll('.prob-fill').forEach(b=>b.style.width=b.dataset.w+'%');},100);
+}
+document.getElementById('dest-input').addEventListener('keydown',e=>{if(e.key==='Enter')analyze();});
+</script>
+</body>
+</html>

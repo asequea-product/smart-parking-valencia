@@ -397,7 +397,18 @@ function renderResult(dest, zona, r) {
       <div class="conclusion-label">✦ Consejo</div>
       <div class="conclusion-text">${r.consejo}</div>
     </div>
- function feedback(found) {
+}
+    <div class="sources">
+      <div class="source"><span class="s-dot" style="background:var(--green)"></span>22 parkings · Ayuntamiento VLC</div>
+      <div class="source"><span class="s-dot" style="background:var(--green)"></span>Zonas ORA · Open Data</div>
+      <div class="source"><span class="s-dot" style="background:var(--yellow)"></span>Disponibilidad estimada</div>
+      <div class="source"><span class="s-dot" style="background:var(--purple)"></span>Análisis · Claude AI</div>
+    </div>`;
+}
+
+document.getElementById('dest-input').addEventListener('keydown', e => { if(e.key==='Enter') analyze(); });
+
+function feedback(found) {
   const msg = document.getElementById('feedback-msg');
   const dest = document.getElementById('dest-input').value;
   const h = new Date().getHours();
@@ -423,16 +434,6 @@ function renderResult(dest, zona, r) {
     msg.style.color = 'var(--muted)';
     msg.textContent = 'Gracias por reportarlo · ajustamos el modelo para esta zona y hora';
   }
-}
-    <div class="sources">
-      <div class="source"><span class="s-dot" style="background:var(--green)"></span>22 parkings · Ayuntamiento VLC</div>
-      <div class="source"><span class="s-dot" style="background:var(--green)"></span>Zonas ORA · Open Data</div>
-      <div class="source"><span class="s-dot" style="background:var(--yellow)"></span>Disponibilidad estimada</div>
-      <div class="source"><span class="s-dot" style="background:var(--purple)"></span>Análisis · Claude AI</div>
-    </div>`;
-}
-
-document.getElementById('dest-input').addEventListener('keydown', e => { if(e.key==='Enter') analyze(); });
 </script>
 </body>
 </html>

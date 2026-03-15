@@ -81,6 +81,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 .stat-value{font-size:14px;font-weight:500;color:var(--text)}
 .ai-note{background:var(--purple2);border-radius:8px;padding:10px 12px;font-size:13px;color:var(--text);line-height:1.5;display:flex;gap:8px;align-items:flex-start}
 .ai-note-icon{color:var(--purple);flex-shrink:0;font-size:12px;font-weight:600;margin-top:1px}
+.maps-link{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:12px;font-weight:500;color:var(--blue);text-decoration:none;background:var(--blue2);padding:7px 12px;border-radius:8px}
 .conclusion{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:16px}
 .conclusion-label{font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--green);margin-bottom:8px}
 .conclusion-text{font-size:14px;color:var(--text);line-height:1.65}
@@ -103,7 +104,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 </head>
 <body>
 
-<!-- Netlify Form (hidden) -->
 <form name="parking-feedback" netlify netlify-honeypot="bot-field" hidden>
   <input type="text" name="destino">
   <input type="text" name="resultado">
@@ -146,6 +146,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
       <div class="empty-desc">Te daré las mejores opciones de aparcamiento combinando calle pública, parkings municipales y análisis de la hora actual.</div>
     </div>
   </div>
+</div>
 
 <script>
 function updateTime() {
@@ -174,11 +175,11 @@ const PARKINGS = [
 ];
 
 const ORA = {
-  'russafa':    [{calle:'Carrer de Russafa',tipo:'Azul',tarifa:'2€/h'},{calle:'Carrer de Denia',tipo:'Naranja',tarifa:'1.5€/h'}],
-  'centro':     [{calle:'Carrer de Colón',tipo:'Azul',tarifa:'2€/h'},{calle:'Gran Via Marquès del Turia',tipo:'Azul',tarifa:'2€/h'}],
-  'eixample':   [{calle:'Carrer de Cirilo Amorós',tipo:'Azul',tarifa:'2€/h'},{calle:'Carrer de Sorní',tipo:'Azul',tarifa:'2€/h'}],
-  'cabanyal':   [{calle:'Carrer de Serreria',tipo:'Azul',tarifa:'2€/h'}],
-  'malvarrosa': [{calle:'Av. del Port',tipo:'Azul',tarifa:'2€/h'}],
+  'russafa':     [{calle:'Carrer de Russafa',tipo:'Azul',tarifa:'2€/h'},{calle:'Carrer de Denia',tipo:'Naranja',tarifa:'1.5€/h'}],
+  'centro':      [{calle:'Carrer de Colón',tipo:'Azul',tarifa:'2€/h'},{calle:'Gran Via Marquès del Turia',tipo:'Azul',tarifa:'2€/h'}],
+  'eixample':    [{calle:'Carrer de Cirilo Amorós',tipo:'Azul',tarifa:'2€/h'},{calle:'Carrer de Sorní',tipo:'Azul',tarifa:'2€/h'}],
+  'cabanyal':    [{calle:'Carrer de Serreria',tipo:'Azul',tarifa:'2€/h'}],
+  'malvarrosa':  [{calle:'Av. del Port',tipo:'Azul',tarifa:'2€/h'}],
   'ciutat vella':[{calle:'Carrer dels Cavallers',tipo:'Naranja',tarifa:'1.5€/h'},{calle:'Plaça del Mercat',tipo:'Naranja',tarifa:'1.5€/h'}],
 };
 
@@ -332,6 +333,7 @@ function renderResult(dest, zona, r) {
     const icon = op.tipo==='calle'?'🛣️':'🅿️';
     const iconCls = op.tipo==='calle'?'icon-street':'icon-parking';
     const tipoLabel = op.tipo==='calle'?'Calle pública':'Parking municipal';
+    const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(op.nombre + ' Valencia')}`;
     return `
     <div class="option ${op.mejor?'best':''}">
       ${op.mejor?'<div class="best-tag">Mejor opción</div>':''}
@@ -354,11 +356,8 @@ function renderResult(dest, zona, r) {
         <div class="stat"><div class="stat-label">Tiempo búsqueda</div><div class="stat-value">~${op.tiempo_min} min</div></div>
         <div class="stat"><div class="stat-label">Coste</div><div class="stat-value">${op.coste}</div></div>
       </div>
-     <div class="ai-note"><span class="ai-note-icon">✦ IA</span>${op.razonamiento}</div>
-      <a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(op.nombre + ' Valencia')}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:12px;font-weight:500;color:var(--blue);text-decoration:none;background:var(--blue2);padding:7px 12px;border-radius:8px">
-        🗺️ Cómo llegar en Google Maps →
-      </a>
-    </div>`;
+      <div class="ai-note"><span class="ai-note-icon">✦ IA</span>${op.razonamiento}</div>
+      <a href="${mapsUrl}" target="_blank" class="maps-link">🗺️ Cómo llegar en Google Maps →</a>
     </div>`;
   }).join('');
 
@@ -425,4 +424,3 @@ document.getElementById('dest-input').addEventListener('keydown', e => { if(e.ke
 </script>
 </body>
 </html>
-

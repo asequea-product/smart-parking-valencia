@@ -18,25 +18,17 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh}
-
-/* Header */
 .header{padding:14px 20px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
 .logo{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;letter-spacing:-.02em}
 .logo span{color:var(--blue)}
 .ai-badge{font-size:10px;font-weight:500;padding:3px 10px;border-radius:20px;background:var(--purple2);color:var(--purple);letter-spacing:.06em;margin-left:4px}
 .time-pill{margin-left:auto;font-size:12px;color:var(--muted);background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:5px 12px;white-space:nowrap}
-
-/* Main */
 .main{max-width:600px;margin:0 auto;padding:0 16px 60px}
-
-/* Hero */
 .hero{padding:32px 0 28px}
 .hero-eyebrow{font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:12px}
 .hero-title{font-family:'Syne',sans-serif;font-size:clamp(26px,5vw,38px);font-weight:700;line-height:1.1;margin-bottom:14px}
 .hero-title span{color:var(--blue)}
 .hero-desc{font-size:15px;color:var(--muted);line-height:1.65}
-
-/* Search card */
 .search-card{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:20px;margin-bottom:24px}
 .search-label{font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
 .search-input{width:100%;background:var(--bg3);border:1.5px solid var(--border2);border-radius:10px;padding:14px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;outline:none;transition:border-color .2s;display:block;margin-bottom:10px}
@@ -45,14 +37,10 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 .search-btn{width:100%;background:var(--blue);border:none;color:#fff;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;padding:14px;border-radius:10px;cursor:pointer;transition:opacity .2s;display:flex;align-items:center;justify-content:center;gap:8px}
 .search-btn:hover{opacity:.88}
 .search-btn:disabled{opacity:.4;cursor:default}
-
-/* Suggestions */
 .suggestions-label{font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:16px 0 8px}
 .suggestions{display:flex;gap:8px;flex-wrap:wrap}
 .suggestion{background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:8px 16px;font-size:13px;color:var(--muted);cursor:pointer;transition:all .2s}
 .suggestion:hover{color:var(--text);border-color:var(--border2);background:var(--bg4)}
-
-/* Loading */
 .loading{display:flex;flex-direction:column;align-items:center;gap:16px;padding:48px 0}
 .loading-dots{display:flex;gap:6px}
 .loading-dots span{width:7px;height:7px;border-radius:50%;background:var(--blue);animation:bounce .8s infinite}
@@ -60,28 +48,19 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 .loading-dots span:nth-child(3){animation-delay:.3s}
 @keyframes bounce{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-5px)}}
 .loading-text{font-size:14px;color:var(--muted);text-align:center}
-
-/* Context chips */
 .context-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
 .chip{font-size:12px;color:var(--muted);background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:6px 12px;display:flex;align-items:center;gap:5px}
 .chip-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
-
-/* Summary */
 .summary-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:16px}
 .summary-label{font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--purple);margin-bottom:8px;display:flex;align-items:center;gap:5px}
 .summary-text{font-size:14px;color:var(--text);line-height:1.65}
-
-/* Section header */
 .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .section-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:600}
 .section-count{font-size:12px;color:var(--muted)}
-
-/* Option cards */
 .options{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
 .option{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px;position:relative;overflow:hidden}
 .option.best{border-color:rgba(79,142,247,0.35)}
 .best-tag{position:absolute;top:14px;right:14px;font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);background:var(--blue2);padding:3px 8px;border-radius:20px}
-
 .option-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
 .option-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
 .icon-street{background:var(--blue2)}
@@ -90,36 +69,32 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 .option-type{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:2px}
 .option-name{font-size:15px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .option-addr{font-size:12px;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-
-/* Prob */
 .prob-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
 .prob-num{font-family:'Syne',sans-serif;font-size:28px;font-weight:700;min-width:60px}
 .prob-right{flex:1}
 .prob-label-row{display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px}
 .prob-bar{height:6px;background:var(--bg4);border-radius:3px;overflow:hidden}
 .prob-fill{height:100%;border-radius:3px;transition:width .8s cubic-bezier(.4,0,.2,1)}
-
-/* Stats row */
 .stats-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
 .stat{background:var(--bg3);border-radius:8px;padding:10px 12px}
 .stat-label{font-size:10px;color:var(--muted);margin-bottom:2px;text-transform:uppercase;letter-spacing:.06em}
 .stat-value{font-size:14px;font-weight:500;color:var(--text)}
-
-/* AI note */
 .ai-note{background:var(--purple2);border-radius:8px;padding:10px 12px;font-size:13px;color:var(--text);line-height:1.5;display:flex;gap:8px;align-items:flex-start}
 .ai-note-icon{color:var(--purple);flex-shrink:0;font-size:12px;font-weight:600;margin-top:1px}
-
-/* Conclusion */
 .conclusion{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:16px}
 .conclusion-label{font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--green);margin-bottom:8px}
 .conclusion-text{font-size:14px;color:var(--text);line-height:1.65}
-
-/* Sources */
+.feedback-card{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:16px;text-align:center}
+.feedback-label{font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px}
+.feedback-btns{display:flex;gap:10px;justify-content:center}
+.feedback-btn{flex:1;max-width:180px;border:1px solid;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:12px;border-radius:10px;cursor:pointer;transition:opacity .2s}
+.feedback-btn:hover{opacity:.8}
+.feedback-btn.yes{background:var(--green2);border-color:rgba(34,197,94,0.3);color:var(--green)}
+.feedback-btn.no{background:var(--red2);border-color:rgba(239,68,68,0.3);color:var(--red)}
+.feedback-msg{margin-top:12px;font-size:13px;color:var(--muted);min-height:20px}
 .sources{display:flex;gap:12px;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--border)}
 .source{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px}
 .s-dot{width:5px;height:5px;border-radius:50%}
-
-/* Empty */
 .empty{text-align:center;padding:48px 0}
 .empty-icon{font-size:44px;margin-bottom:16px;opacity:.35}
 .empty-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:600;margin-bottom:8px}
@@ -127,6 +102,15 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 </style>
 </head>
 <body>
+
+<!-- Netlify Form (hidden) -->
+<form name="parking-feedback" netlify netlify-honeypot="bot-field" hidden>
+  <input type="text" name="destino">
+  <input type="text" name="resultado">
+  <input type="text" name="hora">
+  <input type="text" name="dia_semana">
+  <input type="text" name="timestamp">
+</form>
 
 <div class="header">
   <div class="logo">Parking<span>AI</span></div>
@@ -145,7 +129,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     <div class="search-label">¿Adónde vas?</div>
     <input class="search-input" id="dest-input" type="text" placeholder="Ej: Mercado Central, Ruzafa, Malvarrosa..." autocomplete="off">
     <button class="search-btn" id="search-btn" onclick="analyze()">Analizar →</button>
-
     <div class="suggestions-label">Ejemplos rápidos</div>
     <div class="suggestions">
       <span class="suggestion" onclick="setDest('Mercado Central')">Mercado Central</span>
@@ -192,29 +175,25 @@ const PARKINGS = [
 ];
 
 const ORA = {
-  'russafa':   [{calle:'Carrer de Russafa',tipo:'Azul',tarifa:'2€/h'},{calle:'Carrer de Denia',tipo:'Naranja',tarifa:'1.5€/h'}],
-  'centro':    [{calle:'Carrer de Colón',tipo:'Azul',tarifa:'2€/h'},{calle:'Gran Via Marquès del Turia',tipo:'Azul',tarifa:'2€/h'}],
-  'eixample':  [{calle:'Carrer de Cirilo Amorós',tipo:'Azul',tarifa:'2€/h'},{calle:'Carrer de Sorní',tipo:'Azul',tarifa:'2€/h'}],
-  'cabanyal':  [{calle:'Carrer de Serreria',tipo:'Azul',tarifa:'2€/h'}],
-  'malvarrosa':[{calle:'Av. del Port',tipo:'Azul',tarifa:'2€/h'}],
+  'russafa':    [{calle:'Carrer de Russafa',tipo:'Azul',tarifa:'2€/h'},{calle:'Carrer de Denia',tipo:'Naranja',tarifa:'1.5€/h'}],
+  'centro':     [{calle:'Carrer de Colón',tipo:'Azul',tarifa:'2€/h'},{calle:'Gran Via Marquès del Turia',tipo:'Azul',tarifa:'2€/h'}],
+  'eixample':   [{calle:'Carrer de Cirilo Amorós',tipo:'Azul',tarifa:'2€/h'},{calle:'Carrer de Sorní',tipo:'Azul',tarifa:'2€/h'}],
+  'cabanyal':   [{calle:'Carrer de Serreria',tipo:'Azul',tarifa:'2€/h'}],
+  'malvarrosa': [{calle:'Av. del Port',tipo:'Azul',tarifa:'2€/h'}],
   'ciutat vella':[{calle:'Carrer dels Cavallers',tipo:'Naranja',tarifa:'1.5€/h'},{calle:'Plaça del Mercat',tipo:'Naranja',tarifa:'1.5€/h'}],
 };
 
 function detectZone(d) {
-  const original = d;
   d = d.toLowerCase();
   if (d.includes('russaf')||d.includes('ruzafa')) return 'russafa';
   if (d.includes('cabanyal')||d.includes('marti')) return 'cabanyal';
   if (d.includes('malva')||d.includes('neptuno')||d.includes('playa')||d.includes('platge')) return 'malvarrosa';
-  if (d.includes('mercat')||d.includes('mercado')||d.includes('reina')||d.includes('catedral')||d.includes('lonja')||d.includes('llotja')||d.includes('ivam')||d.includes('guillem')) return 'ciutat vella';
+  if (d.includes('mercat')||d.includes('mercado')||d.includes('reina')||d.includes('catedral')||d.includes('lonja')||d.includes('ivam')||d.includes('guillem')) return 'ciutat vella';
   if (d.includes('colon')||d.includes('colón')||d.includes('ayuntamiento')||d.includes('ajuntament')||d.includes('glorieta')) return 'centro';
   if (d.includes('sorni')||d.includes('cirilo')||d.includes('jorge juan')||d.includes('gran via')||d.includes('eixample')) return 'eixample';
   if (d.includes('artes')||d.includes('ciencies')||d.includes('ciudad de las')||d.includes('oceanogr')) return 'malvarrosa';
-
-  // Municipios fuera de Valencia ciudad
-  const fueraDeValencia = ['meliana','alboraya','burjassot','mislata','torrent','paterna','alaquàs','aldaia','xirivella','picanya','paiporta','sedaví','massanassa','catarroja','albal','benetússer','manises','quart','moncada','foios','museros','tavernes blanques','vinalesa','godella','rocafort','bétera','náquera','serra'];
-  if (fueraDeValencia.some(m => d.includes(m))) return 'FUERA';
-
+  const fuera = ['meliana','alboraya','burjassot','mislata','torrent','paterna','alaquàs','aldaia','xirivella','picanya','paiporta','sedaví','massanassa','catarroja','albal','benetússer','manises','quart','moncada','foios','museros','tavernes blanques','vinalesa','godella','rocafort','bétera','náquera','serra'];
+  if (fuera.some(m => d.includes(m))) return 'FUERA';
   return 'centro';
 }
 
@@ -271,6 +250,7 @@ async function analyze() {
   btn.textContent = 'Analizando...';
 
   const zona = detectZone(dest);
+
   if (zona === 'FUERA') {
     document.getElementById('result-area').innerHTML = `
       <div class="empty">
@@ -282,6 +262,7 @@ async function analyze() {
     btn.textContent = 'Analizar →';
     return;
   }
+
   const ora = ORA[zona]||ORA['centro'];
   const parkings = getNearestParkings(zona);
   const streetProb = estimateStreet(zona);
@@ -397,7 +378,14 @@ function renderResult(dest, zona, r) {
       <div class="conclusion-label">✦ Consejo</div>
       <div class="conclusion-text">${r.consejo}</div>
     </div>
-}
+    <div class="feedback-card">
+      <div class="feedback-label">¿Te ha sido útil esta recomendación?</div>
+      <div class="feedback-btns">
+        <button class="feedback-btn yes" onclick="feedback(true)">✅ Encontré plaza</button>
+        <button class="feedback-btn no" onclick="feedback(false)">❌ No encontré plaza</button>
+      </div>
+      <div class="feedback-msg" id="feedback-msg"></div>
+    </div>
     <div class="sources">
       <div class="source"><span class="s-dot" style="background:var(--green)"></span>22 parkings · Ayuntamiento VLC</div>
       <div class="source"><span class="s-dot" style="background:var(--green)"></span>Zonas ORA · Open Data</div>
@@ -406,14 +394,9 @@ function renderResult(dest, zona, r) {
     </div>`;
 }
 
-document.getElementById('dest-input').addEventListener('keydown', e => { if(e.key==='Enter') analyze(); });
-
 function feedback(found) {
   const msg = document.getElementById('feedback-msg');
   const dest = document.getElementById('dest-input').value;
-  const h = new Date().getHours();
-  const day = new Date().getDay();
-
   fetch('/', {
     method: 'POST',
     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -421,12 +404,11 @@ function feedback(found) {
       'form-name': 'parking-feedback',
       'destino': dest,
       'resultado': found ? 'encontre_plaza' : 'no_encontre_plaza',
-      'hora': h,
-      'dia_semana': day,
+      'hora': new Date().getHours(),
+      'dia_semana': new Date().getDay(),
       'timestamp': new Date().toISOString()
     }).toString()
   });
-
   if (found) {
     msg.style.color = 'var(--green)';
     msg.textContent = '✓ Genial · +15 puntos · ayudas a mejorar las predicciones';
@@ -434,6 +416,10 @@ function feedback(found) {
     msg.style.color = 'var(--muted)';
     msg.textContent = 'Gracias por reportarlo · ajustamos el modelo para esta zona y hora';
   }
+}
+
+document.getElementById('dest-input').addEventListener('keydown', e => { if(e.key==='Enter') analyze(); });
 </script>
 </body>
 </html>
+

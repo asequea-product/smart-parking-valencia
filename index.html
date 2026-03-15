@@ -3,215 +3,409 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Parking Decision Assistant — Valencia</title>
+<title>ParkingAI Valencia</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap');
-:root{--bg:#09090c;--bg2:#111116;--bg3:#18181f;--bg4:#1f1f28;--border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.1);--text:#f0eff8;--muted:#6b6a7a;--muted2:#9998aa;--accent:#7c6aff;--accent2:#a594ff;--green:#22c55e;--yellow:#f59e0b;--red:#ef4444;}
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap');
+:root{
+  --bg:#0a0d13;--bg2:#111520;--bg3:#181e2e;--bg4:#1e2538;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.12);
+  --text:#edeef2;--muted:#6b7485;
+  --blue:#4f8ef7;--blue2:rgba(79,142,247,0.12);
+  --green:#22c55e;--green2:rgba(34,197,94,0.12);
+  --yellow:#f59e0b;--yellow2:rgba(245,158,11,0.12);
+  --red:#ef4444;--red2:rgba(239,68,68,0.12);
+  --purple:#a78bfa;--purple2:rgba(167,139,250,0.12);
+}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;flex-direction:column}
-.header{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-shrink:0}
-.logo{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;letter-spacing:-.02em}
-.logo span{color:var(--accent2)}
-.badge{font-size:10px;font-weight:500;padding:3px 8px;border-radius:20px;background:rgba(124,106,255,0.12);color:var(--accent2);letter-spacing:.06em;border:1px solid rgba(124,106,255,0.2)}
-.header-right{margin-left:auto;font-size:11px;color:var(--muted)}
-.main{flex:1;display:flex;flex-direction:column;max-width:680px;width:100%;margin:0 auto;padding:32px 24px 48px}
-.hero{margin-bottom:32px}
-.hero-label{font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--accent2);margin-bottom:12px}
-.hero-title{font-family:'Syne',sans-serif;font-size:clamp(24px,5vw,36px);font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:10px}
-.hero-title span{color:var(--accent2)}
-.hero-desc{font-size:14px;color:var(--muted2);line-height:1.6;max-width:480px}
-.search-box{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:16px;margin-bottom:24px;transition:border-color .2s}
-.search-box:focus-within{border-color:rgba(124,106,255,0.4)}
-.search-row{display:flex;gap:10px;align-items:flex-end}
-.search-field{flex:1}
-.search-label{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
-.search-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
-.search-input:focus{border-color:rgba(124,106,255,0.4)}
+html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh}
+
+/* Header */
+.header{padding:14px 20px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.logo{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;letter-spacing:-.02em}
+.logo span{color:var(--blue)}
+.ai-badge{font-size:10px;font-weight:500;padding:3px 10px;border-radius:20px;background:var(--purple2);color:var(--purple);letter-spacing:.06em;margin-left:4px}
+.time-pill{margin-left:auto;font-size:12px;color:var(--muted);background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:5px 12px;white-space:nowrap}
+
+/* Main */
+.main{max-width:600px;margin:0 auto;padding:0 16px 60px}
+
+/* Hero */
+.hero{padding:32px 0 28px}
+.hero-eyebrow{font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:12px}
+.hero-title{font-family:'Syne',sans-serif;font-size:clamp(26px,5vw,38px);font-weight:700;line-height:1.1;margin-bottom:14px}
+.hero-title span{color:var(--blue)}
+.hero-desc{font-size:15px;color:var(--muted);line-height:1.65}
+
+/* Search card */
+.search-card{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:20px;margin-bottom:24px}
+.search-label{font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.search-input{width:100%;background:var(--bg3);border:1.5px solid var(--border2);border-radius:10px;padding:14px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;outline:none;transition:border-color .2s;display:block;margin-bottom:10px}
+.search-input:focus{border-color:rgba(79,142,247,0.5)}
 .search-input::placeholder{color:var(--muted)}
-.context-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
-.ctx-chip{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--muted2);cursor:pointer;transition:all .2s}
-.ctx-chip:hover{border-color:var(--border2);color:var(--text)}
-.ctx-chip.active{background:rgba(124,106,255,0.1);border-color:rgba(124,106,255,0.3);color:var(--accent2)}
-.search-btn{background:var(--accent);border:none;border-radius:10px;padding:11px 20px;color:#fff;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;transition:opacity .2s}
-.search-btn:hover{opacity:.9}
+.search-btn{width:100%;background:var(--blue);border:none;color:#fff;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;padding:14px;border-radius:10px;cursor:pointer;transition:opacity .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.search-btn:hover{opacity:.88}
 .search-btn:disabled{opacity:.4;cursor:default}
-.examples{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.example-btn{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--muted2);cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
-.example-btn:hover{border-color:var(--border2);color:var(--text)}
-.thinking{display:none;align-items:center;gap:12px;padding:20px;background:var(--bg2);border:1px solid var(--border);border-radius:16px;margin-bottom:24px;font-size:14px;color:var(--muted2)}
-.thinking.show{display:flex}
-.think-dots{display:flex;gap:4px}
-.think-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:blink 1.4s infinite}
-.think-dot:nth-child(2){animation-delay:.2s}
-.think-dot:nth-child(3){animation-delay:.4s}
-@keyframes blink{0%,100%{opacity:.2}50%{opacity:1}}
-.results{display:none}
-.results.show{display:block}
-.results-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-.results-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em}
-.results-dest{font-size:12px;color:var(--accent2);background:rgba(124,106,255,0.1);padding:3px 10px;border-radius:20px}
-.option-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:12px;position:relative;overflow:hidden;transition:border-color .2s}
-.option-card:hover{border-color:var(--border2)}
-.option-card.best{border-color:rgba(124,106,255,0.35)}
-.option-card.best::before{content:'Mejor opción';position:absolute;top:0;right:0;background:var(--accent);color:#fff;font-size:10px;font-weight:600;padding:4px 12px;border-radius:0 16px 0 8px;letter-spacing:.06em}
-.option-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
-.option-left{flex:1}
-.option-num{font-size:10px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
-.option-name{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--text);letter-spacing:-.01em;margin-bottom:3px}
-.option-type{font-size:12px;color:var(--muted2)}
-.option-prob{text-align:right}
-.prob-num{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;letter-spacing:-.03em;line-height:1}
-.prob-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
-.prob-bar{height:4px;background:var(--bg4);border-radius:2px;margin-bottom:14px;overflow:hidden}
-.prob-fill{height:100%;border-radius:2px;transition:width .8s cubic-bezier(.4,0,.2,1)}
-.option-meta{display:flex;gap:16px;flex-wrap:wrap}
-.meta-item{display:flex;flex-direction:column;gap:2px}
-.meta-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
-.meta-value{font-size:13px;font-weight:500;color:var(--text)}
-.ai-reasoning{margin-top:14px;padding-top:14px;border-top:1px solid var(--border);font-size:13px;color:var(--muted2);line-height:1.6;font-style:italic}
-.ai-tag{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:500;color:var(--accent2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;font-style:normal}
-.summary-box{background:rgba(124,106,255,0.06);border:1px solid rgba(124,106,255,0.15);border-radius:12px;padding:16px 18px;margin-top:4px;font-size:13px;color:var(--muted2);line-height:1.7}
-.summary-box strong{color:var(--text);font-weight:500}
-.data-sources{margin-top:16px;padding:12px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;font-size:11px;color:var(--muted);display:flex;gap:16px;flex-wrap:wrap}
-.data-src{display:flex;align-items:center;gap:5px}
-.src-dot{width:5px;height:5px;border-radius:50%;background:var(--green);flex-shrink:0}
-.empty{text-align:center;padding:40px 20px;color:var(--muted)}
-.empty-icon{font-size:32px;margin-bottom:12px}
-.empty-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--muted2);margin-bottom:6px}
-.empty-desc{font-size:13px;line-height:1.6}
-@media(max-width:480px){.main{padding:20px 16px 40px}.search-row{flex-direction:column}.option-top{flex-direction:column;gap:12px}.option-prob{text-align:left}}
+
+/* Suggestions */
+.suggestions-label{font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:16px 0 8px}
+.suggestions{display:flex;gap:8px;flex-wrap:wrap}
+.suggestion{background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:8px 16px;font-size:13px;color:var(--muted);cursor:pointer;transition:all .2s}
+.suggestion:hover{color:var(--text);border-color:var(--border2);background:var(--bg4)}
+
+/* Loading */
+.loading{display:flex;flex-direction:column;align-items:center;gap:16px;padding:48px 0}
+.loading-dots{display:flex;gap:6px}
+.loading-dots span{width:7px;height:7px;border-radius:50%;background:var(--blue);animation:bounce .8s infinite}
+.loading-dots span:nth-child(2){animation-delay:.15s}
+.loading-dots span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-5px)}}
+.loading-text{font-size:14px;color:var(--muted);text-align:center}
+
+/* Context chips */
+.context-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.chip{font-size:12px;color:var(--muted);background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:6px 12px;display:flex;align-items:center;gap:5px}
+.chip-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+
+/* Summary */
+.summary-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:16px}
+.summary-label{font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--purple);margin-bottom:8px;display:flex;align-items:center;gap:5px}
+.summary-text{font-size:14px;color:var(--text);line-height:1.65}
+
+/* Section header */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.section-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:600}
+.section-count{font-size:12px;color:var(--muted)}
+
+/* Option cards */
+.options{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.option{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px;position:relative;overflow:hidden}
+.option.best{border-color:rgba(79,142,247,0.35)}
+.best-tag{position:absolute;top:14px;right:14px;font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);background:var(--blue2);padding:3px 8px;border-radius:20px}
+
+.option-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.option-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.icon-street{background:var(--blue2)}
+.icon-parking{background:var(--green2)}
+.option-info{flex:1;min-width:0}
+.option-type{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:2px}
+.option-name{font-size:15px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.option-addr{font-size:12px;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Prob */
+.prob-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.prob-num{font-family:'Syne',sans-serif;font-size:28px;font-weight:700;min-width:60px}
+.prob-right{flex:1}
+.prob-label-row{display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px}
+.prob-bar{height:6px;background:var(--bg4);border-radius:3px;overflow:hidden}
+.prob-fill{height:100%;border-radius:3px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+
+/* Stats row */
+.stats-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.stat{background:var(--bg3);border-radius:8px;padding:10px 12px}
+.stat-label{font-size:10px;color:var(--muted);margin-bottom:2px;text-transform:uppercase;letter-spacing:.06em}
+.stat-value{font-size:14px;font-weight:500;color:var(--text)}
+
+/* AI note */
+.ai-note{background:var(--purple2);border-radius:8px;padding:10px 12px;font-size:13px;color:var(--text);line-height:1.5;display:flex;gap:8px;align-items:flex-start}
+.ai-note-icon{color:var(--purple);flex-shrink:0;font-size:12px;font-weight:600;margin-top:1px}
+
+/* Conclusion */
+.conclusion{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:16px}
+.conclusion-label{font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--green);margin-bottom:8px}
+.conclusion-text{font-size:14px;color:var(--text);line-height:1.65}
+
+/* Sources */
+.sources{display:flex;gap:12px;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--border)}
+.source{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px}
+.s-dot{width:5px;height:5px;border-radius:50%}
+
+/* Empty */
+.empty{text-align:center;padding:48px 0}
+.empty-icon{font-size:44px;margin-bottom:16px;opacity:.35}
+.empty-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:600;margin-bottom:8px}
+.empty-desc{font-size:14px;color:var(--muted);line-height:1.6}
 </style>
 </head>
 <body>
+
 <div class="header">
   <div class="logo">Parking<span>AI</span></div>
-  <span class="badge">AI-FIRST · PORTFOLIO</span>
-  <div class="header-right">Valencia · datos reales</div>
+  <span class="ai-badge">AI-FIRST · PORTFOLIO</span>
+  <div class="time-pill" id="time-pill">—</div>
 </div>
+
 <div class="main">
   <div class="hero">
-    <div class="hero-label">Parking Decision Assistant</div>
-    <h1 class="hero-title">¿Dónde tengo más<br>probabilidades de <span>aparcar</span>?</h1>
+    <div class="hero-eyebrow">Parking Decision Assistant</div>
+    <div class="hero-title">¿Dónde tengo más<br>probabilidades de <span>aparcar</span>?</div>
     <p class="hero-desc">No prometemos plaza libre. Te damos la mejor decisión posible — hora actual, zona, parkings reales de Valencia y patrones históricos.</p>
   </div>
-  <div class="search-box">
-    <div class="search-row">
-      <div class="search-field">
-        <div class="search-label">¿Adónde vas?</div>
-        <input class="search-input" id="dest-input" type="text" placeholder="Ej: Mercado Central, Ruzafa, IVAM..." autocomplete="off">
-      </div>
-      <button class="search-btn" id="search-btn" onclick="analyze()">Analizar →</button>
-    </div>
-    <div class="context-row">
-      <div class="ctx-chip active" id="chip-calle" onclick="toggleChip('calle')">🚗 Calle</div>
-      <div class="ctx-chip active" id="chip-parking" onclick="toggleChip('parking')">🅿️ Parking</div>
-      <div class="ctx-chip" id="chip-urgente" onclick="toggleChip('urgente')">⚡ Tengo prisa</div>
-      <div class="ctx-chip" id="chip-barato" onclick="toggleChip('barato')">💶 Busco precio</div>
-    </div>
-    <div style="margin-top:10px">
-      <div class="search-label">Ejemplos rápidos</div>
-      <div class="examples">
-        <button class="example-btn" onclick="setDest('Mercado Central')">Mercado Central</button>
-        <button class="example-btn" onclick="setDest('Ruzafa')">Ruzafa</button>
-        <button class="example-btn" onclick="setDest('Ciudad de las Artes')">Ciudad de las Artes</button>
-        <button class="example-btn" onclick="setDest('Malvarrosa')">Malvarrosa</button>
-        <button class="example-btn" onclick="setDest('IVAM')">IVAM</button>
-      </div>
+
+  <div class="search-card">
+    <div class="search-label">¿Adónde vas?</div>
+    <input class="search-input" id="dest-input" type="text" placeholder="Ej: Mercado Central, Ruzafa, Malvarrosa..." autocomplete="off">
+    <button class="search-btn" id="search-btn" onclick="analyze()">Analizar →</button>
+
+    <div class="suggestions-label">Ejemplos rápidos</div>
+    <div class="suggestions">
+      <span class="suggestion" onclick="setDest('Mercado Central')">Mercado Central</span>
+      <span class="suggestion" onclick="setDest('Ruzafa')">Ruzafa</span>
+      <span class="suggestion" onclick="setDest('Ciudad de las Artes')">Ciudad de las Artes</span>
+      <span class="suggestion" onclick="setDest('Malvarrosa')">Malvarrosa</span>
+      <span class="suggestion" onclick="setDest('IVAM')">IVAM</span>
     </div>
   </div>
-  <div class="thinking" id="thinking">
-    <div class="think-dots"><div class="think-dot"></div><div class="think-dot"></div><div class="think-dot"></div></div>
-    <span id="thinking-text">Analizando zona y hora actual...</span>
-  </div>
-  <div class="results" id="results">
-    <div class="results-header">
-      <div class="results-title">Opciones recomendadas</div>
-      <div class="results-dest" id="results-dest"></div>
+
+  <div id="result-area">
+    <div class="empty">
+      <div class="empty-icon">🚗</div>
+      <div class="empty-title">Introduce tu destino</div>
+      <div class="empty-desc">Te daré las mejores opciones de aparcamiento combinando calle pública, parkings municipales y análisis de la hora actual.</div>
     </div>
-    <div id="options-container"></div>
-    <div class="summary-box" id="summary-box"></div>
-    <div class="data-sources">
-      <div class="data-src"><span class="src-dot"></span>22 parkings municipales · Ayuntamiento VLC</div>
-      <div class="data-src"><span class="src-dot"></span>Zonas ORA · Open Data Valencia</div>
-      <div class="data-src"><span class="src-dot"></span>Hora actual · <span id="hora-actual"></span></div>
-    </div>
-  </div>
-  <div class="empty" id="empty-state">
-    <div class="empty-icon">🗺️</div>
-    <div class="empty-title">Introduce tu destino</div>
-    <div class="empty-desc">Te diremos dónde tienes más probabilidades de aparcar cerca, cuánto tiempo tardarás y si merece la pena buscar en calle o ir directo a parking.</div>
   </div>
 </div>
+
 <script>
-const P=[{n:'Parking Colón',dm:400,dr:600,da:2200,dma:3100,di:800,pl:375,pr:'2€/h'},{n:'Parking Reina',dm:250,dr:900,da:2800,dma:3500,di:600,pl:207,pr:'1.8€/h'},{n:'Parking Ruzafa',dm:900,dr:200,da:1600,dma:2800,di:1400,pl:173,pr:'1.5€/h'},{n:'Parking Glorieta-Paz',dm:350,dr:700,da:2400,dma:3200,di:500,pl:375,pr:'1.8€/h'},{n:'Parking Av. Oeste',dm:600,dr:800,da:2000,dma:3000,di:300,pl:257,pr:'1.5€/h'},{n:'Parking Severo Ochoa',dm:1100,dr:1200,da:1800,dma:2200,di:900,pl:464,pr:'1.2€/h'},{n:'Parking Neptuno',dm:3200,dr:2800,da:1200,dma:600,di:3800,pl:373,pr:'2€/h'},{n:'Parking Chile-Aragón',dm:2200,dr:2100,da:800,dma:2000,di:2100,pl:527,pr:'1.5€/h'}];
-const C={'mercado central':[{n:'Calle del Mar',t:'ORA Azul',ta:'2€/h',p:40},{n:'Calle Bolsería',t:'ORA Naranja',ta:'1.5€/h',p:35},{n:'Calle Quart',t:'ORA Azul',ta:'2€/h',p:45}],'ruzafa':[{n:'Calle Cádiz',t:'ORA Azul',ta:'2€/h',p:45},{n:'Calle Cuba',t:'ORA Naranja',ta:'1.5€/h',p:38},{n:'Calle Sueca',t:'ORA Azul',ta:'2€/h',p:42}],'ciudad de las artes':[{n:'Av. del Saler',t:'Sin ORA',ta:'Gratis',p:65},{n:'Calle Pintor Maella',t:'Sin ORA',ta:'Gratis',p:60},{n:'Av. López Piñero',t:'Sin ORA',ta:'Gratis',p:70}],'malvarrosa':[{n:'Paseo Neptuno',t:'Sin ORA',ta:'Gratis',p:55},{n:'Calle Eugenia Viñes',t:'Sin ORA',ta:'Gratis',p:60},{n:'Calle de la Reina',t:'Sin ORA',ta:'Gratis',p:65}],'ivam':[{n:'Calle Guillem de Castro',t:'ORA Azul',ta:'2€/h',p:42},{n:'Calle dels Cavallers',t:'ORA Naranja',ta:'1.5€/h',p:38},{n:'Calle Quart',t:'ORA Azul',ta:'2€/h',p:45}]};
-let wC=true,wP=true,urg=false,bar=false;
-function hf(){const h=new Date().getHours(),w=[0,6].includes(new Date().getDay());if(w)return 0.75;if((h>=9&&h<=10)||(h>=16&&h<=20))return 0.35;if(h>=10&&h<=14)return 0.4;if(h>=14&&h<=16)return 0.6;return 0.85;}
-function hd(){const h=new Date().getHours(),w=[0,6].includes(new Date().getDay());if(w)return 'fin de semana';if((h>=9&&h<=10)||(h>=16&&h<=20))return 'hora punta';if(h>=10&&h<=14)return 'media mañana';if(h>=14&&h<=16)return 'hora de comida';if(h>=20)return 'noche tranquila';return 'madrugada';}
-function md(d){d=d.toLowerCase();if(d.includes('mercado')||d.includes('central')||d.includes('carmen'))return 'mercado central';if(d.includes('ruzafa')||d.includes('russafa'))return 'ruzafa';if(d.includes('arte')||d.includes('cienci'))return 'ciudad de las artes';if(d.includes('malva')||d.includes('neptuno')||d.includes('playa'))return 'malvarrosa';if(d.includes('ivam')||d.includes('guillem'))return 'ivam';return 'mercado central';}
-function toggleChip(t){const c=document.getElementById('chip-'+t);if(t==='calle'){wC=!wC;c.classList.toggle('active',wC);}else if(t==='parking'){wP=!wP;c.classList.toggle('active',wP);}else if(t==='urgente'){urg=!urg;c.classList.toggle('active',urg);bar=false;document.getElementById('chip-barato').classList.remove('active');}else{bar=!bar;c.classList.toggle('active',bar);urg=false;document.getElementById('chip-urgente').classList.remove('active');}}
-function setDest(v){document.getElementById('dest-input').value=v;analyze();}
-function gc(p){return p>=55?'#22c55e':p>=35?'#f59e0b':'#ef4444';}
-async function analyze(){
-  const dest=document.getElementById('dest-input').value.trim();
-  if(!dest){document.getElementById('dest-input').focus();return;}
-  document.getElementById('empty-state').style.display='none';
-  document.getElementById('results').classList.remove('show');
-  document.getElementById('thinking').classList.add('show');
-  document.getElementById('search-btn').disabled=true;
-  const txts=['Analizando zona y hora actual...','Consultando parkings municipales...','Calculando probabilidades...','Generando recomendación con IA...'];
-  let ti=0;const iv=setInterval(()=>{ti=(ti+1)%txts.length;document.getElementById('thinking-text').textContent=txts[ti];},900);
-  const h=new Date().getHours(),f=hf(),hourDesc=hd(),dk=md(dest);
-  const calles=(C[dk]||C['mercado central']).map(c=>({...c,prob:Math.round(Math.min(90,Math.max(10,c.p*f*(0.85+Math.random()*0.3))))}));
-  const distMap={mercado_central:'dm',ruzafa:'dr','ciudad_de_las_artes':'da',malvarrosa:'dma',ivam:'di'};
-  const dkey=distMap[dk.replace(/ /g,'_')]||'dm';
-  const parks=P.map(p=>({...p,dist:p[dkey],prob:Math.round(Math.min(90,Math.max(40,70*f*(0.9+Math.random()*0.2)+15)))})).sort((a,b)=>a.dist-b.dist).slice(0,3);
-  const prompt=`Eres experto en movilidad urbana en Valencia, España.
-Usuario quiere aparcar cerca de: "${dest}"
-Hora: ${h}:00 (${hourDesc}). Quiere calle: ${wC}, parking: ${wP}, prisa: ${urg}, precio: ${bar}
+function updateTime() {
+  const now = new Date();
+  const h = now.getHours(), m = String(now.getMinutes()).padStart(2,'0');
+  const days = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  const isWeekend = [0,6].includes(now.getDay());
+  const isPeak = !isWeekend && ((h>=9&&h<=14)||(h>=16&&h<=20));
+  const period = isPeak ? 'Hora punta' : isWeekend ? 'Fin de semana' : (h>=22||h<=7) ? 'Noche' : 'Hora normal';
+  document.getElementById('time-pill').textContent = `${days[now.getDay()]} ${h}:${m} · ${period}`;
+}
+updateTime();
+setInterval(updateTime, 30000);
 
-CALLES:
-${calles.map((c,i)=>`${i+1}. ${c.n} (${c.t}) - ${c.ta} - Probabilidad: ${c.prob}%`).join('\n')}
+const PARKINGS = [
+  {nombre:'Parking Colón',direccion:'Av. Navarro Reverter',plazas:201,zona:'centro'},
+  {nombre:'Glorieta - Paz',direccion:'Pl. Tetuán / C. de la Paz',plazas:375,zona:'centro'},
+  {nombre:'Reina',direccion:'Plaça de la Reina',plazas:207,zona:'ciutat vella'},
+  {nombre:'Mercat Central',direccion:'Editor Manuel Aguilar',plazas:431,zona:'ciutat vella'},
+  {nombre:'Ruzafa',direccion:'Pl. Barón de Cortés',plazas:173,zona:'russafa'},
+  {nombre:'Av. Oeste - S. Agustín',direccion:'Av. Barón de Cárcer',plazas:805,zona:'centro'},
+  {nombre:'Reino de Valencia',direccion:'Maestro Gozalbo',plazas:192,zona:'eixample'},
+  {nombre:'Severo Ochoa',direccion:'Profesor Severo Ochoa',plazas:464,zona:'eixample'},
+  {nombre:'Paseo Neptuno',direccion:'Paseo Neptuno',plazas:373,zona:'malvarrosa'},
+  {nombre:'Marti Grajales',direccion:'Calle Martí Grajales',plazas:369,zona:'cabanyal'},
+];
 
-PARKINGS MUNICIPALES:
-${parks.map((p,i)=>`${i+1}. ${p.n} - ${p.pl} plazas - ${p.pr} - ${p.dist}m - Disponibilidad: ${p.prob}%`).join('\n')}
+const ORA = {
+  'russafa':   [{calle:'Carrer de Russafa',tipo:'Azul',tarifa:'2€/h'},{calle:'Carrer de Denia',tipo:'Naranja',tarifa:'1.5€/h'}],
+  'centro':    [{calle:'Carrer de Colón',tipo:'Azul',tarifa:'2€/h'},{calle:'Gran Via Marquès del Turia',tipo:'Azul',tarifa:'2€/h'}],
+  'eixample':  [{calle:'Carrer de Cirilo Amorós',tipo:'Azul',tarifa:'2€/h'},{calle:'Carrer de Sorní',tipo:'Azul',tarifa:'2€/h'}],
+  'cabanyal':  [{calle:'Carrer de Serreria',tipo:'Azul',tarifa:'2€/h'}],
+  'malvarrosa':[{calle:'Av. del Port',tipo:'Azul',tarifa:'2€/h'}],
+  'ciutat vella':[{calle:'Carrer dels Cavallers',tipo:'Naranja',tarifa:'1.5€/h'},{calle:'Plaça del Mercat',tipo:'Naranja',tarifa:'1.5€/h'}],
+};
 
-Responde SOLO JSON sin texto extra:
-{"opciones":[{"nombre":"string","tipo":"string","prob":number,"tiempo":"string","coste":"string","razonamiento":"frase concreta sobre por qué esta opción ahora mismo","esMejor":boolean}],"resumen":"consejo final 2-3 frases mencionando hora y destino"}
-Devuelve 3 opciones ordenadas mejor a peor.`;
-  try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
-    const data=await res.json();
-    const parsed=JSON.parse((data.content?.[0]?.text||'').replace(/```json|```/g,'').trim());
-    clearInterval(iv);renderResults(dest,parsed);
-  }catch(e){
-    clearInterval(iv);
-    const ops=[];
-    if(wC)ops.push({nombre:calles[0].n,tipo:calles[0].t,prob:calles[0].prob,tiempo:'2-4 min andando',coste:calles[0].ta,razonamiento:`Zona con mayor rotación cerca de ${dest}. ${hourDesc} — ${calles[0].prob>50?'buen momento para intentarlo.':'ocupación alta, intenta llegar pronto.'}`,esMejor:!urg});
-    if(wP){ops.push({nombre:parks[0].n,tipo:'Parking municipal',prob:parks[0].prob,tiempo:`${Math.round(parks[0].dist/80)} min andando`,coste:parks[0].pr,razonamiento:`El parking municipal más cercano. ${parks[0].pl} plazas totales.`,esMejor:urg});if(parks[1])ops.push({nombre:parks[1].n,tipo:'Parking municipal',prob:parks[1].prob,tiempo:`${Math.round(parks[1].dist/80)} min andando`,coste:parks[1].pr,razonamiento:`Segunda opción. Mayor capacidad (${parks[1].pl} plazas).`,esMejor:false});}
-    renderResults(dest,{opciones:ops,resumen:`Para ${dest} a esta hora (${hourDesc}), ${urg?'prioriza el parking — no pierdas tiempo buscando en calle.':'merece la pena intentar calle primero. Si en 5 min no encuentras, ve al parking más cercano.'}`});
+function detectZone(d) {
+  const original = d;
+  d = d.toLowerCase();
+  if (d.includes('russaf')||d.includes('ruzafa')) return 'russafa';
+  if (d.includes('cabanyal')||d.includes('marti')) return 'cabanyal';
+  if (d.includes('malva')||d.includes('neptuno')||d.includes('playa')||d.includes('platge')) return 'malvarrosa';
+  if (d.includes('mercat')||d.includes('mercado')||d.includes('reina')||d.includes('catedral')||d.includes('lonja')||d.includes('llotja')||d.includes('ivam')||d.includes('guillem')) return 'ciutat vella';
+  if (d.includes('colon')||d.includes('colón')||d.includes('ayuntamiento')||d.includes('ajuntament')||d.includes('glorieta')) return 'centro';
+  if (d.includes('sorni')||d.includes('cirilo')||d.includes('jorge juan')||d.includes('gran via')||d.includes('eixample')) return 'eixample';
+  if (d.includes('artes')||d.includes('ciencies')||d.includes('ciudad de las')||d.includes('oceanogr')) return 'malvarrosa';
+
+  // Municipios fuera de Valencia ciudad
+  const fueraDeValencia = ['meliana','alboraya','burjassot','mislata','torrent','paterna','alaquàs','aldaia','xirivella','picanya','paiporta','sedaví','massanassa','catarroja','albal','benetússer','manises','quart','moncada','foios','museros','tavernes blanques','vinalesa','godella','rocafort','bétera','náquera','serra'];
+  if (fueraDeValencia.some(m => d.includes(m))) return 'FUERA';
+
+  return 'centro';
+}
+
+function getNearestParkings(zona) {
+  return PARKINGS.filter(p => p.zona === zona).slice(0,2).concat(
+    PARKINGS.filter(p => p.zona !== zona).slice(0,1)
+  ).slice(0,2);
+}
+
+function estimateStreet(zona) {
+  const h = new Date().getHours();
+  const isWeekend = [0,6].includes(new Date().getDay());
+  const isPeak = !isWeekend&&((h>=9&&h<=14)||(h>=16&&h<=20));
+  const isMidnight = h>=22||h<=7;
+  const base = {'russafa':40,'centro':25,'eixample':45,'cabanyal':60,'malvarrosa':55,'ciutat vella':20}[zona]||40;
+  let p = base;
+  if (isMidnight) p = Math.min(p+35,90);
+  else if (isWeekend) p = Math.min(p+20,80);
+  else if (isPeak) p = Math.max(p-15,10);
+  return Math.round(p+(Math.random()*8-4));
+}
+
+function estimateParking(plazas) {
+  const h = new Date().getHours();
+  const isWeekend = [0,6].includes(new Date().getDay());
+  const isPeak = !isWeekend&&((h>=9&&h<=14)||(h>=16&&h<=20));
+  const isMidnight = h>=22||h<=7;
+  let pct = isMidnight?85:isWeekend?70:isPeak?35:60;
+  pct = Math.round(pct+(Math.random()*8-4));
+  return {pct, libres:Math.round(plazas*pct/100)};
+}
+
+function isORAActive() {
+  const h = new Date().getHours(), d = new Date().getDay();
+  if (d===0) return false;
+  if (d===6) return h>=9&&h<14;
+  return (h>=9&&h<14)||(h>=16&&h<20);
+}
+
+function probColor(p) { return p>=50?'var(--green)':p>=30?'var(--yellow)':'var(--red)'; }
+function probLabel(p) { return p>=60?'Alta':p>=40?'Media':p>=25?'Baja':'Muy baja'; }
+
+function setDest(d) {
+  document.getElementById('dest-input').value = d;
+  analyze();
+}
+
+async function analyze() {
+  const dest = document.getElementById('dest-input').value.trim();
+  if (!dest) { document.getElementById('dest-input').focus(); return; }
+
+  const btn = document.getElementById('search-btn');
+  btn.disabled = true;
+  btn.textContent = 'Analizando...';
+
+  const zona = detectZone(dest);
+  if (zona === 'FUERA') {
+    document.getElementById('result-area').innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">📍</div>
+        <div class="empty-title">Fuera de cobertura</div>
+        <div class="empty-desc">"${dest}" está fuera de Valencia ciudad.<br>De momento solo cubro Valencia capital.<br><br>Prueba con: Ruzafa, Mercado Central, Malvarrosa, Ciudad de las Artes...</div>
+      </div>`;
+    btn.disabled = false;
+    btn.textContent = 'Analizar →';
+    return;
   }
+  const ora = ORA[zona]||ORA['centro'];
+  const parkings = getNearestParkings(zona);
+  const streetProb = estimateStreet(zona);
+  const oraActive = isORAActive();
+  const h = new Date().getHours();
+  const isWeekend = [0,6].includes(new Date().getDay());
+
+  document.getElementById('result-area').innerHTML = `
+    <div class="loading">
+      <div class="loading-dots"><span></span><span></span><span></span></div>
+      <div class="loading-text">Analizando ${dest}...</div>
+    </div>`;
+
+  const parkingCtx = parkings.map(p => {
+    const {pct,libres} = estimateParking(p.plazas);
+    return `${p.nombre}: ${p.plazas} plazas, ~${libres} libres (${pct}%)`;
+  }).join('\n');
+
+  const prompt = `Eres un asistente de aparcamiento para Valencia, España. El usuario va a: "${dest}" (zona: ${zona}).
+
+DATOS ACTUALES:
+- Hora: ${h}:00h, ${isWeekend?'fin de semana':'laborable'}
+- ORA activa ahora: ${oraActive?'SÍ (pagar en calle)':'NO (gratis en calle)'}
+- Prob. plaza en calle zona ${zona}: ${streetProb}%
+- Calle principal: ${ora[0].calle} (${ora[0].tipo}, ${ora[0].tarifa})
+- Parkings cercanos:\n${parkingCtx}
+
+Responde SOLO JSON válido sin markdown:
+{"resumen":"2 frases sobre la situación actual","opciones":[{"tipo":"calle|municipal","nombre":"string","direccion":"string","probabilidad":número,"tiempo_min":número,"coste":"string","razonamiento":"1 frase","mejor":bool}],"consejo":"1 consejo práctico"}
+
+2-3 opciones ordenadas de mejor a peor. Sé conciso y honesto.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,messages:[{role:'user',content:prompt}]})
+    });
+    const data = await res.json();
+    const result = JSON.parse((data.content?.[0]?.text||'').replace(/```json|```/g,'').trim());
+    renderResult(dest, zona, result);
+  } catch(e) {
+    renderResult(dest, zona, buildFallback(dest, zona, ora, parkings, streetProb, oraActive));
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Analizar →';
 }
-function renderResults(dest,data){
-  document.getElementById('thinking').classList.remove('show');
-  document.getElementById('search-btn').disabled=false;
-  document.getElementById('results-dest').textContent=dest;
-  document.getElementById('hora-actual').textContent=new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
-  const cont=document.getElementById('options-container');
-  cont.innerHTML='';
-  data.opciones.forEach((op,i)=>{
-    const col=gc(op.prob);
-    const d=document.createElement('div');
-    d.className='option-card'+(op.esMejor?' best':'');
-    d.innerHTML=`<div class="option-top"><div class="option-left"><div class="option-num">Opción ${i+1}</div><div class="option-name">${op.nombre}</div><div class="option-type">${op.tipo}</div></div><div class="option-prob"><div class="prob-num" style="color:${col}">${op.prob}%</div><div class="prob-label">probabilidad</div></div></div><div class="prob-bar"><div class="prob-fill" style="width:0%;background:${col}" data-w="${op.prob}"></div></div><div class="option-meta"><div class="meta-item"><span class="meta-label">Tiempo</span><span class="meta-value">${op.tiempo}</span></div><div class="meta-item"><span class="meta-label">Coste</span><span class="meta-value">${op.coste}</span></div></div><div class="ai-reasoning"><div class="ai-tag">✦ Análisis IA</div>${op.razonamiento}</div>`;
-    cont.appendChild(d);
+
+function buildFallback(dest, zona, ora, parkings, streetProb, oraActive) {
+  const h = new Date().getHours();
+  const ops = [];
+  ops.push({tipo:'calle',nombre:ora[0].calle,direccion:`Zona ORA ${ora[0].tipo}`,probabilidad:streetProb,tiempo_min:streetProb>50?5:10,coste:oraActive?ora[0].tarifa:'Gratis ahora',razonamiento:oraActive?`ORA activa · ${ora[0].tarifa}`:'ORA no activa — aparcar es gratis',mejor:streetProb>=40});
+  parkings.slice(0,2).forEach((p,i)=>{
+    const {pct,libres}=estimateParking(p.plazas);
+    ops.push({tipo:'municipal',nombre:p.nombre,direccion:p.direccion,probabilidad:pct,tiempo_min:2,coste:'~1.5-2€/h',razonamiento:`${p.plazas} plazas · ~${libres} libres estimadas`,mejor:i===0&&streetProb<40});
   });
-  document.getElementById('summary-box').innerHTML=`<strong>Conclusión:</strong> ${data.resumen}`;
-  document.getElementById('results').classList.add('show');
-  setTimeout(()=>{document.querySelectorAll('.prob-fill').forEach(b=>b.style.width=b.dataset.w+'%');},100);
+  return {resumen:`Son las ${h}h en ${zona}. ${oraActive?'ORA activa, hay que pagar en calle.':'ORA inactiva — calle gratis.'} Probabilidad en calle: ${streetProb}%.`,opciones:ops,consejo:streetProb>50?`Buena hora para buscar en calle en ${zona}.`:`Hora punta en ${zona}. El parking municipal es más seguro.`};
 }
-document.getElementById('dest-input').addEventListener('keydown',e=>{if(e.key==='Enter')analyze();});
+
+function renderResult(dest, zona, r) {
+  const h = new Date().getHours();
+  const isWeekend = [0,6].includes(new Date().getDay());
+  const isPeak = !isWeekend&&((h>=9&&h<=14)||(h>=16&&h<=20));
+
+  const optsHtml = r.opciones.map(op=>{
+    const col = probColor(op.probabilidad);
+    const icon = op.tipo==='calle'?'🛣️':'🅿️';
+    const iconCls = op.tipo==='calle'?'icon-street':'icon-parking';
+    const tipoLabel = op.tipo==='calle'?'Calle pública':'Parking municipal';
+    return `
+    <div class="option ${op.mejor?'best':''}">
+      ${op.mejor?'<div class="best-tag">Mejor opción</div>':''}
+      <div class="option-header">
+        <div class="option-icon ${iconCls}">${icon}</div>
+        <div class="option-info">
+          <div class="option-type">${tipoLabel}</div>
+          <div class="option-name">${op.nombre}</div>
+          <div class="option-addr">${op.direccion}</div>
+        </div>
+      </div>
+      <div class="prob-row">
+        <div class="prob-num" style="color:${col}">${op.probabilidad}%</div>
+        <div class="prob-right">
+          <div class="prob-label-row"><span style="color:var(--muted)">Probabilidad de plaza</span><span style="color:${col}">${probLabel(op.probabilidad)}</span></div>
+          <div class="prob-bar"><div class="prob-fill" style="width:${op.probabilidad}%;background:${col}"></div></div>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat"><div class="stat-label">Tiempo búsqueda</div><div class="stat-value">~${op.tiempo_min} min</div></div>
+        <div class="stat"><div class="stat-label">Coste</div><div class="stat-value">${op.coste}</div></div>
+      </div>
+      <div class="ai-note"><span class="ai-note-icon">✦ IA</span>${op.razonamiento}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('result-area').innerHTML = `
+    <div class="context-chips">
+      <div class="chip"><span class="chip-dot" style="background:var(--blue)"></span>${dest}</div>
+      <div class="chip"><span class="chip-dot" style="background:${isPeak?'var(--red)':'var(--green)'}"></span>${isPeak?'Hora punta':'Hora normal'}</div>
+      <div class="chip"><span class="chip-dot" style="background:var(--purple)"></span>Zona ${zona}</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">✦ Situación actual</div>
+      <div class="summary-text">${r.resumen}</div>
+    </div>
+    <div class="section-header">
+      <div class="section-title">Tus opciones</div>
+      <div class="section-count">${r.opciones.length} opciones</div>
+    </div>
+    <div class="options">${optsHtml}</div>
+    <div class="conclusion">
+      <div class="conclusion-label">✦ Consejo</div>
+      <div class="conclusion-text">${r.consejo}</div>
+    </div>
+    <div class="sources">
+      <div class="source"><span class="s-dot" style="background:var(--green)"></span>22 parkings · Ayuntamiento VLC</div>
+      <div class="source"><span class="s-dot" style="background:var(--green)"></span>Zonas ORA · Open Data</div>
+      <div class="source"><span class="s-dot" style="background:var(--yellow)"></span>Disponibilidad estimada</div>
+      <div class="source"><span class="s-dot" style="background:var(--purple)"></span>Análisis · Claude AI</div>
+    </div>`;
+}
+
+document.getElementById('dest-input').addEventListener('keydown', e => { if(e.key==='Enter') analyze(); });
 </script>
 </body>
 </html>
